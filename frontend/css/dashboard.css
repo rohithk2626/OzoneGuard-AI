@@ -1,1 +1,15 @@
-/* Page-specific styles are consolidated in style.css in this build. */
+/* Dashboard: saved locations list. */
+.saved-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.saved-list { display: grid; gap: 0; margin: 8px 0 0; padding: 0; list-style: none; }
+.saved-list li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 12px 10px; border-bottom: 1px solid var(--bd); border-left: 4px solid transparent; }
+.saved-list li:last-child { border-bottom: 0; }
+.saved-list li.current { border-left-color: var(--teal); background: #f4faf6; }
+.saved-open { display: grid; gap: 1px; padding: 0; border: 0; background: none; color: var(--navy); text-align: left; }
+.saved-open strong { font: 700 1rem Manrope, sans-serif; }
+.saved-open span { color: var(--mut); font-size: .82rem; }
+.saved-open:hover strong { color: var(--teal); }
+.saved-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.saved-actions button { padding: 6px 12px; border: 1px solid var(--bd); border-radius: 99px; background: #fff; color: var(--navy); font-size: .8rem; font-weight: 700; }
+.saved-actions button:hover { border-color: #b7ccc3; background: #f1f7f3; }
+.saved-actions button.danger { color: #b42318; }
+.saved-actions button.danger[data-armed="1"] { border-color: #b42318; background: #b42318; color: #fff; }

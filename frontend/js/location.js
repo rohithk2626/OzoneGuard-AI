@@ -1,20 +1,167 @@
-let map,marker,LOCS=[];
-async function show(n){
- setLoc(n);$('#search').value=n;$('#sel').value=n;const out=$('#out');state(out,'Loading environmental data…');
- try{const d=await API.getCurrent(n);
-  if(map){map.setView([d.lat,d.lon],7);marker.setLatLng([d.lat,d.lon]).bindPopup(n)}
-  out.innerHTML=`<h2>${n}</h2><div class="note">${MOCK_NOTE}</div><div class="grid">${statCards(d)}</div><div class="grid two" style="margin-top:18px">${uvCard(d.uv)}
-  <div class="card"><h3>Additional information</h3><p><b>Ozone condition:</b> ${ozoneState(d.ozone)}</p><p><b>Weather:</b> ${d.temp} °C, humidity ${d.humidity}%, cloud ${d.cloud}%, wind ${d.wind} km/h</p><p><b>Last updated:</b> ${fmt(d.updated)}</p><p><b>Data source:</b> ${d.source==='mock'?'Sample/mock data (not live)':'Backend API'}</p></div></div>`;
-  lucide.createIcons();
- }catch(e){state(out,'Could not load data: '+e.message,1)}
+let map, marker;
+let selectedCoordinates = null;
+
+const INDIA_CENTER = [22.5, 79];
+const INDIA_MAX_BOUNDS = L.latLngBounds([6.0, 68.0], [37.5, 97.5]);
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 }
-const nearest=(la,lo)=>LOCS.map(l=>[l,Math.hypot(l.lat-la,l.lon-lo)]).sort((a,b)=>a[1]-b[1])[0][0];
-document.addEventListener('DOMContentLoaded',async()=>{
- map=L.map('map').setView([22.5,79],5);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);marker=L.marker([22.5,79]).addTo(map);
- LOCS=await fillSelect($('#sel'),show)||[];$('#dl').innerHTML=LOCS.map(l=>`<option value="${l.name}">`).join('');
- $('#search').onchange=e=>{const l=LOCS.find(x=>x.name.toLowerCase()===e.target.value.trim().toLowerCase());l?show(l.name):state($('#out'),'No sample location matches “'+e.target.value+'”. Try a listed city.',1)};
- map.on('click',e=>show(nearest(e.latlng.lat,e.latlng.lng).name));
- $('#gps').onclick=()=>{if(!navigator.geolocation)return state($('#out'),'Geolocation is not supported.',1);
-  navigator.geolocation.getCurrentPosition(p=>show(nearest(p.coords.latitude,p.coords.longitude).name),()=>state($('#out'),'Location permission denied. Select a city instead.',1))};
- show(getLoc());
+
+function coordinateLabel(lat, lon) {
+  return `${Number(lat).toFixed(5)}° ${lat >= 0 ? 'N' : 'S'}, ${Number(lon).toFixed(5)}° ${lon >= 0 ? 'E' : 'W'}`;
+}
+
+function uvRiskClass(level) {
+  return String(level || 'Unavailable').toLowerCase().replaceAll(' ', '-');
+}
+
+function formatNumber(value, digits = 1) {
+  return value === null || value === undefined || Number.isNaN(Number(value)) ? '—' : Number(value).toFixed(digits);
+}
+
+function renderMetric(title, value, unit, icon) {
+  return `<div class="card metric-card"><div class="card-icon"><i data-lucide="${icon}"></i></div><h3>${title}</h3><strong>${escapeHtml(value)}${unit ? ` <small>${escapeHtml(unit)}</small>` : ''}</strong></div>`;
+}
+
+function renderSelectedLocation(data) {
+  const out = document.querySelector('#out');
+  const { latitude: lat, longitude: lon, place } = data.location;
+  const weather = data.weather || {};
+  const ozone = data.ozone || {};
+  const risk = data.risk || {};
+  const placeName = place?.city || place?.state || 'Selected point in India';
+  const uv = weather.uv_index;
+
+  out.innerHTML = `
+    <div class="selected-location-card">
+      <div class="section-intro" style="margin-bottom:14px">
+        <span class="eyebrow">Selected location</span>
+        <h2>${escapeHtml(placeName)}</h2>
+        <p>${escapeHtml(coordinateLabel(lat, lon))}${place?.state ? ` · ${escapeHtml(place.state)}` : ''}</p>
+        <div class="place-actions">
+          <button class="btn" id="save-place" type="button"><i data-lucide="bookmark-plus"></i>Save this location</button>
+          <a class="btn ghost" href="predictions.html"><i data-lucide="trending-up"></i>Next 24 hours</a>
+          <a class="btn ghost" href="analytics.html"><i data-lucide="chart-line"></i>History</a>
+          <span class="save-msg" id="save-msg" role="status"></span>
+        </div>
+      </div>
+
+      <div class="grid">
+        ${renderMetric('Ozone layer (total column)', formatNumber(ozone.value, 0), ozone.unit || 'DU', 'layers')}
+        ${renderMetric('UV Index', formatNumber(uv, 1), '', 'sun')}
+        ${renderMetric('Temperature', formatNumber(weather.temperature, 1), weather.temperature_unit || '°C', 'thermometer')}
+        ${renderMetric('Humidity', formatNumber(weather.humidity, 0), weather.humidity_unit || '%', 'droplets')}
+        ${renderMetric('Cloud Cover', formatNumber(weather.cloud_cover, 0), '%', 'cloud')}
+        ${renderMetric('Wind', formatNumber(weather.wind_speed, 1), 'km/h', 'wind')}
+      </div>
+
+      <div class="grid two" style="margin-top:18px">
+        <div class="card risk-card risk-${escapeHtml(uvRiskClass(risk.level))}">
+          <span class="eyebrow">Current UV risk</span>
+          <h2>${escapeHtml(risk.level || 'Unavailable')}</h2>
+          <p>${uv === null || uv === undefined ? 'UV data is currently unavailable.' : `Current UV Index is ${formatNumber(uv, 1)}.`}</p>
+        </div>
+        <div class="card">
+          <span class="eyebrow">Observation</span>
+          <h3>${escapeHtml(weather.time || '—')}</h3>
+          <p>Timezone: ${escapeHtml(weather.timezone || '—')}</p>
+          <p>Data retrieved: ${escapeHtml(new Date(data.generated_at).toLocaleString())}</p>
+        </div>
+      </div>
+
+      <div class="card data-source-card" style="margin-top:18px">
+        <span class="eyebrow">Data sources</span>
+        <div class="source-list">
+          ${(data.data_sources || []).map(source => `<div><strong>${escapeHtml(source.name)}</strong><span>${escapeHtml(source.purpose)}</span><em>${escapeHtml(source.status)}</em></div>`).join('')}
+        </div>
+        ${ozone.status === 'requires_earthdata_auth' ? `<div class="note" style="margin-top:14px">NASA ozone is not fabricated when satellite access is unavailable. Configure NASA Earthdata authentication on the backend to populate the ozone observation.</div>` : ''}
+        ${ozone.status === 'unavailable' ? `<div class="note" style="margin-top:14px"><strong>Satellite ozone unavailable.</strong> ${escapeHtml(ozone.message || '')}</div>` : ''}
+        ${ozone.value !== null && ozone.value !== undefined && ozone.observation_time ? `<p style="margin-top:12px;font-size:.84rem">Ozone layer value: NASA OMI satellite pass of ${escapeHtml(new Date(ozone.observation_time).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }))}, nearest observation about ${formatNumber((ozone.distance_degrees || 0) * 111, 0)} km away.${ozone.status === 'stale' ? ` <strong>${escapeHtml(ozone.message || '')}</strong>` : ''}</p>` : ''}
+      </div>
+    </div>`;
+
+  document.querySelector('#save-place').addEventListener('click', () => savePlace(placeName === 'Selected point in India' ? null : placeName, lat, lon));
+  if (window.lucide) lucide.createIcons();
+}
+
+/* Saved locations: Firestore when signed in, this browser otherwise (js/account.js). */
+async function savePlace(name, lat, lon) {
+  const note = document.querySelector('#save-msg'), button = document.querySelector('#save-place');
+  button.disabled = true; note.className = 'save-msg'; note.textContent = 'Saving…';
+  try {
+    const saved = await OGAccount.locations.add({ name, lat, lon });
+    const where = OGAccount.locations.mode() === 'cloud' ? 'your account' : 'this device (sign in to keep it on every device)';
+    note.textContent = saved.already ? `Already saved as "${saved.name}".` : `Saved to ${where}.`;
+    note.classList.add('ok');
+  } catch (error) {
+    note.textContent = OGAccount.message(error); note.classList.add('err');
+  }
+  button.disabled = false;
+}
+
+function renderLocationError(message) {
+  document.querySelector('#out').innerHTML = `<div class="note location-error" role="alert"><strong>Location not available.</strong><br>${escapeHtml(message)}</div>`;
+}
+
+async function selectCoordinates(lat, lon, source = 'map') {
+  const latitude = Number(lat), longitude = Number(lon);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return renderLocationError('Invalid coordinates were received.');
+
+  selectedCoordinates = { latitude, longitude, source };
+  marker.setLatLng([latitude, longitude]).bindPopup(`<b>Selected point</b><br>${escapeHtml(coordinateLabel(latitude, longitude))}`).openPopup();
+  document.querySelector('#out').innerHTML = '<div class="card"><p>Loading live weather and UV conditions…</p></div>';
+
+  try {
+    const data = await API.getLocationOverview(latitude, longitude);
+    renderSelectedLocation(data);
+    const place = data.location?.place || {};
+    setPlace(latitude, longitude, place.city || place.district || place.state || null);
+  } catch (error) {
+    renderLocationError(error.message || 'The backend could not process this location.');
+  }
+}
+
+function useGps() {
+  if (!navigator.geolocation) return renderLocationError('Geolocation is not supported by this browser.');
+  document.querySelector('#out').innerHTML = '<div class="card"><p>Getting your current coordinates…</p></div>';
+  navigator.geolocation.getCurrentPosition(
+    ({ coords }) => {
+      const { latitude, longitude } = coords;
+      if (!INDIA_MAX_BOUNDS.contains([latitude, longitude])) return renderLocationError('Your current location is outside the supported India map area.');
+      map.setView([latitude, longitude], 10); selectCoordinates(latitude, longitude, 'gps');
+    },
+    error => renderLocationError(error.code === 1 ? 'Location permission was denied. Select a point manually on the map.' : 'Your current location could not be determined.'),
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+  );
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  map = L.map('map', { minZoom: 4, maxZoom: 16, maxBounds: INDIA_MAX_BOUNDS.pad(0.08), maxBoundsViscosity: 0.85 }).setView(INDIA_CENTER, 5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(map);
+  marker = L.marker(INDIA_CENTER).addTo(map).bindPopup('<b>OzoneGuard AI</b><br>Select any point inside India.').openPopup();
+  map.on('click', event => selectCoordinates(event.latlng.lat, event.latlng.lng, 'map'));
+  document.querySelector('#gps').addEventListener('click', useGps);
+  document.querySelector('#clear-location').addEventListener('click', () => {
+    selectedCoordinates = null; marker.setLatLng(INDIA_CENTER).bindPopup('<b>OzoneGuard AI</b><br>Select any point inside India.').openPopup();
+    map.setView(INDIA_CENTER, 5); document.querySelector('#out').innerHTML = '<div class="card"><p>Select any point on the India map to begin.</p></div>';
+  });
+  document.querySelector('#coordinate-form').addEventListener('submit', event => {
+    event.preventDefault(); const lat = Number(document.querySelector('#latitude').value), lon = Number(document.querySelector('#longitude').value);
+    if (!INDIA_MAX_BOUNDS.contains([lat, lon])) return renderLocationError('Those coordinates are outside the supported India geographic area.');
+    map.setView([lat, lon], 10); selectCoordinates(lat, lon, 'coordinates');
+  });
+  document.querySelector('#out').innerHTML = '<div class="card"><p>Select any point on the India map to begin.</p></div>';
+  if (window.lucide) lucide.createIcons();
+
+  /* Opened from a saved location on the dashboard: show that place straight away. */
+  let handed = false;
+  try { handed = sessionStorage.getItem('og_open_place') === '1'; sessionStorage.removeItem('og_open_place'); } catch (_) {}
+  const last = getPlace();
+  if (handed && last && INDIA_MAX_BOUNDS.contains([last.lat, last.lon])) {
+    document.querySelector('#latitude').value = last.lat; document.querySelector('#longitude').value = last.lon;
+    map.setView([last.lat, last.lon], 9); selectCoordinates(last.lat, last.lon, 'saved');
+  }
 });

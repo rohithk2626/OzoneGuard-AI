@@ -1,1 +1,24 @@
-/* Page-specific styles are consolidated in style.css in this build. */
+/* Predictions (FUTURE) page */
+.pred-map { height: 320px; }
+.pred-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.pred-head h2 { margin: 4px 0 2px; }
+.pred-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.kpi .v { color: var(--navy); font: 800 1.7rem Manrope, sans-serif; letter-spacing: -.03em; }
+.kpi .v small { margin-left: 4px; color: var(--mut); font-size: .8rem; font-weight: 600; }
+.kpi .l { color: var(--mut); font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.kpi .s { margin-top: 4px; color: var(--mut); font-size: .84rem; }
+.kpi.peak { border-left: 5px solid var(--c, #999); }
+.quality-high { border-left: 5px solid #3a8f5c; }
+.quality-medium { border-left: 5px solid #d6a72c; }
+.quality-low { border-left: 5px solid #d9583f; }
+.window-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.window-list span { padding: 5px 11px; border-radius: 99px; background: #fdeee4; color: #8a3d12; font-size: .82rem; font-weight: 700; }
+.ptable td.num, .ptable th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.ptable tr.peak-row td { background: #fff7e6; font-weight: 700; }
+.range { color: var(--mut); font-size: .8rem; }
+.facts { display: grid; gap: 8px; margin-top: 10px; font-size: .9rem; }
+.facts div { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 7px; border-bottom: 1px solid var(--bd); }
+.facts div:last-child { border-bottom: 0; }
+.facts b { color: var(--navy); text-align: right; }
+.tip-list { margin: 8px 0 0 18px; color: var(--mut); font-size: .92rem; }
+@media (max-width: 700px) { .pred-map { height: 260px; } .ptable .hide-sm { display: none; } }

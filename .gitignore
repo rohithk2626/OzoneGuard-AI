@@ -15,3 +15,16 @@ node_modules/
 # System files
 .DS_Store
 Thumbs.db
+# Python tooling / test cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local / regenerable data (rebuild with the commands in README)
+data/raw/openmeteo/
+data/raw/nasa/
+data/intermediate/
+data/processed/
+logs/
+*.pkl
+# Model artifacts in models/ and data/samples/*.parquet ARE kept: the API needs them.

@@ -1,11 +1,40 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>About · OzoneGuard AI</title><link rel="stylesheet" href="css/style.css"></head><body><div id="nav"></div><main><div class="page-h"><div class="wrap"><h1>About OzoneGuard AI</h1><p>Final-year B.Tech CSE-AIML project.</p></div></div><section><div class="wrap grid two">
-<div class="card"><h3>Introduction</h3><p>An AI-assisted platform for monitoring local ozone and UV conditions in India.</p></div>
-<div class="card"><h3>Problem statement</h3><p>The public lacks accessible, location-specific UV risk information based on ozone and weather data.</p></div>
-<div class="card"><h3>Objectives</h3><p>Present current conditions, forecast UV risk, analyse historical trends and give safety guidance.</p></div>
-<div class="card"><h3>Proposed solution</h3><p>A web dashboard backed by a FastAPI service and an ML model trained on satellite and weather data.</p></div>
-<div class="card"><h3>AI/ML methodology</h3><p>Feature engineering on ozone, cloud, weather and solar variables; regression or time-series models; evaluation with held-out data.</p></div>
-<div class="card"><h3>Data sources</h3><p>Planned: satellite ozone products (e.g. NASA), weather and UV APIs. Currently the UI uses mock data.</p></div>
-<div class="card"><h3>Technologies</h3><p>HTML5, CSS3, JavaScript, Chart.js, Leaflet.js, OpenStreetMap, Lucide; future Python, FastAPI, scikit-learn/TensorFlow, database.</p></div>
-<div class="card"><h3>Architecture</h3><p>Data sources → ingestion/processing → ML model → FastAPI REST → this frontend (js/api.js).</p></div>
-<div class="card"><h3>Developer</h3><p>Name, roll number, guide and institution: to be added.</p></div></div></section>
-</main><div id="foot"></div><script src="https://unpkg.com/lucide@latest"></script><script src="js/api.js"></script><script src="js/main.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Learn about OzoneGuard AI, an educational project exploring ozone, UV conditions and environmental awareness.">
+  <title>About · OzoneGuard AI</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="nav"></div>
+  <main>
+    <div class="page-h"><div class="wrap"><span class="eyebrow">About the project</span><h1>Environmental context, made easier to explore.</h1><p>OzoneGuard AI is an educational project exploring how environmental information can help people understand ozone and UV conditions.</p></div></div>
+    <section>
+      <div class="wrap">
+        <div class="section-intro">
+          <span class="eyebrow">Our approach</span>
+          <h2>From environmental data to useful context.</h2>
+          <p>The project brings several signals into one interface, with clear explanations about what the information can—and cannot—tell us.</p>
+        </div>
+        <div class="grid two">
+          <article class="card"><div class="card-icon"><i data-lucide="target"></i></div><h3>What we’re exploring</h3><p>How a location-focused experience could make ozone, UV and weather information easier to browse and understand.</p></article>
+          <article class="card"><div class="card-icon"><i data-lucide="scan-search"></i></div><h3>Why it matters</h3><p>UV conditions vary over time and from place to place. Clear context can support awareness and informed everyday planning.</p></article>
+          <article class="card"><div class="card-icon"><i data-lucide="workflow"></i></div><h3>How the concept works</h3><p>A FastAPI backend fetches CAMS composition data and weather forecasts for the chosen point, builds features, and runs two gradient-boosted models: one for ground-level ozone and one for the UV index.</p></article>
+          <article class="card"><div class="card-icon"><i data-lucide="line-chart"></i></div><h3>What you can explore</h3><p>Live conditions for any map point, a 24-hour forecast with measured uncertainty ranges, real history since August 2022, and your own saved locations.</p></article>
+          <article class="card"><div class="card-icon"><i data-lucide="database"></i></div><h3>Data and transparency</h3><p>Nothing is generated in the browser. Ozone and UV come from the CAMS model (Copernicus/ECMWF) via Open-Meteo, weather from Open-Meteo, and total-column ozone from NASA OMI. If a source is down, the page says so instead of showing a number.</p></article>
+          <article class="card"><div class="card-icon"><i data-lucide="code-2"></i></div><h3>Built for learning</h3><p>The interface uses HTML, CSS and JavaScript with Chart.js, Leaflet and Lucide. The backend is FastAPI with XGBoost models trained on 1.39 million hourly records from 38 places; accounts use Firebase.</p></article>
+        </div>
+        <div class="note" style="margin-top:22px">OzoneGuard AI is an educational demonstration, not an official monitoring service or a substitute for local public-health guidance. Its ozone and UV values come from an atmospheric model rather than ground sensors, and its forecasts carry measured error, so do not rely on it alone for health or safety decisions.</div>
+      </div>
+    </section>
+  </main>
+  <div id="foot"></div>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/account.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
