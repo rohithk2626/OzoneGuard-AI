@@ -1,3 +1,43 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sign in · OzoneGuard AI</title><link rel="stylesheet" href="css/style.css"></head><body><div id="nav"></div><main><form class="card form" data-mode="login" novalidate><span class="eyebrow">Welcome back</span><h2>Sign in to OzoneGuard.</h2><p class="form-intro">Access your dashboard and saved locations.</p><div class="f"><input name="email" type="email" placeholder="Email address" aria-label="Email address" autocomplete="email"><div class="e" data-f="email"></div></div><div class="f"><input name="password" type="password" placeholder="Password" aria-label="Password" autocomplete="current-password"><div class="e" data-f="password"></div></div>
-<label><input type="checkbox" name="remember"> Remember me</label><p style="margin:20px 0 14px"><button class="btn" type="submit">Sign in</button></p><div class="form-links"><a href="signup.html">New here? Create an account</a><a href="#" id="forgot">Forgot password?</a></div><div class="msg"></div></form>
-</main><div id="foot"></div><script src="https://unpkg.com/lucide@latest"></script><script src="js/firebase-config.js"></script><script src="js/api.js"></script><script src="js/account.js"></script><script src="js/main.js"></script><script src="js/auth.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sign in · OzoneGuard AI</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="nav"></div>
+  <main>
+    <div class="wrap auth">
+      <div class="auth-aside">
+        <p class="eyebrow">Welcome back</p>
+        <h1>Sign in to OzoneGuard.</h1>
+        <p>Access your dashboard and saved locations.</p>
+        <ul>
+          <li><i data-lucide="bookmark"></i>Your saved places, on any device you sign in from.</li>
+          <li><i data-lucide="layout-dashboard"></i>Live conditions, the next 24 hours and the last two weeks for each place.</li>
+          <li><i data-lucide="lock-keyhole"></i>Passwords go straight to Firebase; the OzoneGuard server never sees them.</li>
+        </ul>
+      </div>
+      <form class="card form" data-mode="login" novalidate>
+        <h2>Sign in</h2>
+        <p class="form-intro">Use the email and password you registered with.</p>
+        <div class="f"><label for="email"><span>Email address</span></label><input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email"><div class="e" data-f="email"></div></div>
+        <div class="f"><label for="password"><span>Password</span></label><input id="password" name="password" type="password" autocomplete="current-password"><div class="e" data-f="password"></div></div>
+        <label><input type="checkbox" name="remember"> Remember me</label>
+        <p style="margin:20px 0 16px"><button class="btn" type="submit">Sign in</button></p>
+        <div class="form-links"><a href="signup.html">New here? Create an account</a><a href="#" id="forgot">Forgot password?</a></div>
+        <div class="msg" role="status"></div>
+      </form>
+    </div>
+  </main>
+  <div id="foot"></div>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/account.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

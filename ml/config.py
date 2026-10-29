@@ -14,7 +14,11 @@ RAW_OPENMETEO = RAW / "openmeteo"
 INTERMEDIATE = DATA / "intermediate"
 PROCESSED = DATA / "processed"
 SAMPLES = DATA / "samples"
-MODELS = ROOT / "models"
+MODELS = ROOT / "models"                 # shared: climatology.parquet
+MODELS_XGBOOST = MODELS / "xgboost"      # XGBoost direct multi-horizon models (ml/train_xgboost.py)
+MODELS_LSTM = MODELS / "lstm"            # LSTM encoder-decoder model (ml/train_lstm.py)
+MODEL_DIRS = {"xgboost": MODELS_XGBOOST, "lstm": MODELS_LSTM}
+DEFAULT_MODEL = "xgboost"                # served when no ?model= is given (env OZONEGUARD_MODEL overrides)
 REPORTS = ROOT / "docs" / "figures"
 
 DATASET_VERSION = "og-cams-ifs-2022.08-2026.10-v1"

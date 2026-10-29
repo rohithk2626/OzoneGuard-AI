@@ -6,9 +6,10 @@ DATA SOURCES ─ CAMS (Open-Meteo AQ API) · NWP forecast archive (Historical Fo
    ↓  ml/preprocess.py            QC · hourly grid · physical limits · spatial-offset report · native-hour flag
    ↓  ml/features.py              direct multi-horizon rows (t, h, T=t+h) · leakage-safe lags · purged split
    ↓  ml/correlation.py           PAST analysis: Pearson/Spearman, heatmaps, scatter, seasonal plots
-   ↓  ml/train.py                 baselines · 5 model families · per-horizon variant · UV ozone ablation
+   ↓  ml/train_xgboost.py         baselines · 5 model families · per-horizon variant · UV ozone ablation
    ↓                              refit · conformal 90 % ranges · single test evaluation · SHAP/permutation
-   ↓  models/                     ozone_model.joblib · uv_model.joblib · conformal.json · metadata · schema · metrics
+   ↓  models/xgboost/             ozone/uv_model.json (+ .joblib) · conformal.json · metadata · schema · metrics
+   ↓  ml/train_lstm.py            (alternative) LSTM encoder-decoder → models/lstm/ · same conformal + test evaluation
    ↓  backend/services/prediction_service.py   live CAMS (≤ t) + live weather forecast (t+1…t+24) → same build_rows()
    ↓  GET /api/v1/predictions/24h             24 hourly rows · ranges · WHO risk · peak · high-risk windows · quality
    ↓  frontend/predictions.html               charts, table, peak, windows, quality, sources
@@ -51,8 +52,10 @@ python -m ml.collect_data fetch                 # or: import-export data/raw/bro
 python -m ml.preprocess
 python -m ml.features
 python -m ml.correlation
-python -m ml.train                              # ~1 h on 2 CPU cores
-python -m ml.report                             # regenerates docs/ml-results.md from models/metrics.json
+python -m ml.train_xgboost                      # ~1 h on 2 CPU cores  -> models/xgboost/
+python -m ml.train_lstm                         # LSTM alternative          -> models/lstm/
+python -m ml.compare_models                     # side-by-side test metrics -> docs/model-comparison.md
+python -m ml.report                             # regenerates docs/ml-results.md from models/xgboost/metrics.json
 pytest -q
 uvicorn backend.main:app --reload               # then open frontend/predictions.html
 ```

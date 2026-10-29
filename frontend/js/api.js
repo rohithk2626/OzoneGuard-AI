@@ -6,13 +6,13 @@
  * by js/account.js (Firebase), not by the backend.
  */
 /* Where the backend is:
- *  - page opened from the backend itself (http://127.0.0.1:8000, or the deployed site) -> same address ('')
- *  - page opened from a separate local file server (e.g. Live Server on port 5500)     -> http://127.0.0.1:8000
+ *  - page served by the backend itself, on any port (http://localhost:8000, :8080, the deployed site) -> same address ('')
+ *  - page opened as a file, or from VS Code Live Server (port 5500/5501)                              -> http://127.0.0.1:8000
  *  - window.OZONE_API_BASE_URL, if set before this script, always wins. */
-const _LOCAL_HOSTS = ['localhost', '127.0.0.1'];
+const _STATIC_DEV_PORTS = ['5500', '5501'];
 const API_CONFIG = {
   BASE_URL: window.OZONE_API_BASE_URL ??
-    (_LOCAL_HOSTS.includes(location.hostname) && location.port !== '8000' ? 'http://127.0.0.1:8000' : '')
+    (location.protocol === 'file:' || _STATIC_DEV_PORTS.includes(location.port) ? 'http://127.0.0.1:8000' : '')
 };
 
 const DATA_NOTE = 'Live weather, CAMS ozone/UV history and trained forecasts for any point in India. Educational project, not medical advice.';
@@ -25,15 +25,17 @@ async function request(path, opts = {}) {
       ...opts
     });
   } catch (_) {
-    throw new Error('Cannot reach the OzoneGuard backend at ' + API_CONFIG.BASE_URL + '. Is it running?');
+    throw new Error('Cannot reach the OzoneGuard backend at ' + (API_CONFIG.BASE_URL || location.origin) + '. Is it running?');
   }
   let body = null;
   try { body = await response.json(); } catch (_) {}
   if (!response.ok) {
-    let detail = body?.detail || body?.message || `Request failed (${response.status})`;
+    let detail = body?.detail || body?.message || `Request failed (${response.status})`, code = '';
     if (Array.isArray(detail)) detail = detail.map(d => d.msg || JSON.stringify(d)).join('; ');
-    else if (detail && typeof detail === 'object') detail = [detail.status, detail.message].filter(Boolean).join(': ') || JSON.stringify(detail);
-    throw new Error(detail);
+    else if (detail && typeof detail === 'object') { code = detail.status || ''; detail = detail.message || detail.status || JSON.stringify(detail); }
+    const err = new Error(detail);
+    err.code = code;   /* machine-readable reason (e.g. provider_unavailable), kept out of the visible text */
+    throw err;
   }
   return body;
 }
@@ -48,7 +50,8 @@ const API = {
   getPresets() { return request('/api/v1/location/presets'); },
 
   /* FUTURE */
-  getPredictions24h(lat, lon) { return request(`/api/v1/predictions/24h?lat=${_enc(lat)}&lon=${_enc(lon)}`); },
+  getPredictions24h(lat, lon, model) { return request(`/api/v1/predictions/24h?lat=${_enc(lat)}&lon=${_enc(lon)}${model ? `&model=${_enc(model)}` : ''}`); },
+  getModels() { return request('/api/v1/predictions/models'); },
 
   /* PAST: start / end are YYYY-MM-DD (Indian days). */
   getHistory(lat, lon, start, end) {

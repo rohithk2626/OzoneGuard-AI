@@ -2,7 +2,7 @@
  * No values are generated in the browser. If the backend cannot return real history,
  * the page shows the reason instead of numbers. */
 (() => {
-  const C = { one: '#0e9384', two: '#c2570c' };              // validated pair (teal, orange): colour-blind safe on white
+  const C = { one: '#2e43b8', two: '#b8620b' };              // ozone blue + sun amber: a colour-blind-safe pair on white
   const DEFAULT = { lat: 17.385, lon: 78.4867, name: 'Hyderabad' };
   const BOUNDS = L.latLngBounds([6.0, 68.0], [37.6, 97.6]);
   const EARLIEST = '2022-08-04', MAX_DAYS = 366;
@@ -126,10 +126,10 @@
     const dots = (complete.length ? complete : d.daily).filter(r => r.ozone_mean !== null && r.uv_max !== null);
     chart('a-sc', 'scatter', undefined, [{ label: 'One day', data: dots.map(r => ({ x: r.ozone_mean, y: r.uv_max, day: r.date })), backgroundColor: C.one + 'b3', borderColor: '#fff', borderWidth: 1, pointRadius: 4, pointHoverRadius: 6 }], 'Peak UV index',
       { o: { interaction: { mode: 'nearest', intersect: true }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${short(c.raw.day)}: ozone ${fmtNum(c.raw.x, 0)} µg/m³, peak UV ${fmtNum(c.raw.y, 1)}` } } },
-        scales: { x: { type: 'linear', title: { display: true, text: 'Average ground-level ozone (µg/m³)', color: '#657982' }, grid: { color: '#e6eeea' } }, y: { beginAtZero: true, title: { display: true, text: 'Peak UV index', color: '#657982' }, grid: { color: '#e6eeea' } } } } });
+        scales: { x: { type: 'linear', title: { display: true, text: 'Average ground-level ozone (µg/m³)', color: '#5c6283' }, grid: { color: '#e7eaf2' } }, y: { beginAtZero: true, title: { display: true, text: 'Peak UV index', color: '#5c6283' }, grid: { color: '#e7eaf2' } } } } });
     const hours = d.average_day.map(h => `${String(h.hour_ist).padStart(2, '0')}:00`);
     chart('a-doz', 'line', hours, [ds('Ozone', d.average_day.map(h => h.ozone), C.one, { fill: true, pointRadius: 0 })], 'µg/m³', { x: 'Hour of day (IST)' });
-    chart('a-duv', 'line', hours, [ds('UV index', d.average_day.map(h => h.uv), C.one, { fill: true, pointRadius: 0 })], 'UV index', { x: 'Hour of day (IST)' });
+    chart('a-duv', 'line', hours, [ds('UV index', d.average_day.map(h => h.uv), C.two, { fill: true, pointRadius: 0 })], 'UV index', { x: 'Hour of day (IST)' });
     window.lucide && lucide.createIcons();
   }
 
@@ -147,12 +147,12 @@
     const known = [...saved, ...presets].find(p => Math.abs(p.lat - lat) < 0.02 && Math.abs(p.lon - lon) < 0.02);   // within ~2 km: use that place's name
     place = setPlace(lat, lon, known ? known.name : null);
     marker.setLatLng([lat, lon]);
-    $('#out').innerHTML = '<div class="card"><p>Loading real history… (CAMS ozone and UV, plus archived weather)</p></div>';
+    $('#out').innerHTML = '<div class="card state">Loading real history… (CAMS ozone and UV, plus archived weather)</div>';
     try {
       render(await API.getHistory(lat, lon, from, to));
     } catch (e) {
       const m = e.message || 'Unknown error';
-      if (/provider|unavailable|Open-Meteo|no_data/i.test(m)) showError('History unavailable', 'A data provider did not return history, so nothing is shown. ' + m);
+      if (/provider|unavailable|Open-Meteo|no_data/i.test((e.code || '') + ' ' + m)) showError('History unavailable', 'A data provider did not return history, so nothing is shown. ' + m);
       else showError('Could not load history', m);
     }
   }

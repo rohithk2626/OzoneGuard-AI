@@ -1,1 +1,25 @@
-/* Page-specific styles are consolidated in style.css in this build. */
+/* Location (NOW) page. */
+
+/* Shared result heading: place name on the left, actions on the right. */
+.result-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 24px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.result-head h2 { font-size: 1.75rem; }
+.result-head p { font-size: .9375rem; }
+.result-head .eyebrow { margin-bottom: 2px; }
+.result-head .place-actions { margin-top: 0; }
+
+/* UV risk first, then the six readings as one ruled block. */
+.now-grid { display: grid; grid-template-columns: minmax(280px, .9fr) minmax(0, 2fr); gap: 16px; }
+.risk-card { display: flex; flex-direction: column; }
+.risk-card h2::before { display: inline-block; width: .55em; height: .55em; margin-right: .35em; border-radius: 3px; background: var(--c); vertical-align: .08em; content: ''; }
+.risk-tip { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); color: var(--text); font-size: .9375rem; }
+.metric-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: hidden; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+.metric-strip .card { border: 0; border-radius: 0; box-shadow: 1px 0 var(--line), 0 1px var(--line); }
+
+.facts { display: grid; margin-top: 10px; font-size: .9375rem; }
+.facts div { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.facts div:last-child { border-bottom: 0; }
+.facts span { color: var(--muted); }
+.facts b { font-weight: 600; text-align: right; }
+
+@media (max-width: 1080px) { .now-grid { grid-template-columns: 1fr; } }
+@media (max-width: 720px) { .metric-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

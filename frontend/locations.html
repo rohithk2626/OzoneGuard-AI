@@ -1,9 +1,60 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Location · OzoneGuard AI</title><meta name="description" content="Select any point in India and inspect live weather, UV and satellite ozone availability."><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></head><body><div id="nav"></div><main><div class="page-h"><div class="wrap"><span class="eyebrow">Explore a place</span><h1>Local conditions, in context.</h1><p>Select your current location or click any point in India to inspect location-specific environmental conditions.</p></div></div><section><div class="wrap"><div class="section-intro"><span class="eyebrow">Interactive map</span><h2>Choose a location</h2><p>Click any point in India or use your GPS location. The exact latitude and longitude are sent to the OzoneGuard AI backend.</p></div><div class="bar">
-<label>Latitude<input id="latitude" type="number" step="0.00001" min="6" max="37.5" placeholder="e.g. 17.38500"></label>
-<label>Longitude<input id="longitude" type="number" step="0.00001" min="68" max="97.5" placeholder="e.g. 78.48670"></label>
-<button class="btn" id="coordinate-submit" type="submit" form="coordinate-form"><i data-lucide="search"></i>Check coordinates</button>
-<button class="btn" id="gps" type="button"><i data-lucide="locate-fixed"></i>Use my location</button>
-<button class="btn ghost" id="clear-location" type="button"><i data-lucide="rotate-ccw"></i>Clear</button>
-</div>
-<form id="coordinate-form" style="display:none"></form><div id="map"></div><div id="out"></div></div></section>
-</main><div id="foot"></div><script src="https://unpkg.com/lucide@latest"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="js/firebase-config.js"></script><script src="js/api.js"></script><script src="js/account.js"></script><script src="js/main.js"></script><script src="js/location.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Location · OzoneGuard AI</title>
+  <meta name="description" content="Select any point in India and inspect live weather, UV and satellite ozone availability.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/locations.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+  <div id="nav"></div>
+  <main>
+    <div class="page-h">
+      <div class="wrap">
+        <div>
+          <p class="eyebrow">Explore a place</p>
+          <h1>Local conditions, in context.</h1>
+          <p>Select your current location or click any point in India to inspect location-specific environmental conditions.</p>
+        </div>
+      </div>
+    </div>
+    <section class="tool-page">
+      <div class="wrap">
+        <div class="picker">
+          <div class="picker-controls">
+            <div>
+              <p class="eyebrow">Interactive map</p>
+              <h2>Choose a location</h2>
+              <p class="lead">Click any point in India or use your GPS location. The exact latitude and longitude are sent to the OzoneGuard AI backend.</p>
+            </div>
+            <div class="bar">
+              <label>Quick pick<select id="preset"><option value="">Custom point</option></select></label>
+              <div class="pair">
+                <label>Latitude<input id="latitude" type="number" step="0.00001" min="6" max="37.5" placeholder="e.g. 17.38500" inputmode="decimal"></label>
+                <label>Longitude<input id="longitude" type="number" step="0.00001" min="68" max="97.5" placeholder="e.g. 78.48670" inputmode="decimal"></label>
+              </div>
+              <button class="btn" id="coordinate-submit" type="submit" form="coordinate-form"><i data-lucide="search"></i>Check coordinates</button>
+              <button class="btn ghost" id="gps" type="button"><i data-lucide="locate-fixed"></i>Use my location</button>
+              <button class="btn ghost" id="clear-location" type="button"><i data-lucide="rotate-ccw"></i>Clear</button>
+            </div>
+          </div>
+          <div id="map" aria-label="Map of India: click to choose a point"></div>
+        </div>
+        <form id="coordinate-form" hidden></form>
+        <div id="out" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+  <div id="foot"></div>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/account.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/location.js"></script>
+</body>
+</html>

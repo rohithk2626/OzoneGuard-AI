@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter, HTTPException, Query
 
+from backend.core.errors import describe_failure
 from backend.schemas.location import LocationOverview, LocationValidation
 from backend.services.geocoding_service import reverse_geocode
 from backend.services.geospatial_service import is_within_india_bounds
@@ -54,13 +55,13 @@ def location_overview(
     try:
         weather = get_current_weather_uv(lat, lon)
     except Exception as exc:
-        weather = {"source": "Open-Meteo", "status": "unavailable", "message": str(exc)}
+        weather = {"source": "Open-Meteo", "status": "unavailable", "message": describe_failure(exc)}
         errors.append("Weather/UV provider unavailable")
 
     try:
         place = reverse_geocode(lat, lon)
     except Exception as exc:
-        place = {"source": "OpenStreetMap Nominatim", "status": "unavailable", "message": str(exc)}
+        place = {"source": "OpenStreetMap Nominatim", "status": "unavailable", "message": describe_failure(exc)}
         errors.append("Reverse geocoding unavailable")
 
     ozone = get_current_ozone(lat, lon)

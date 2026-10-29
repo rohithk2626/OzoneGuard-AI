@@ -1,9 +1,9 @@
 /* FUTURE: 24-hour ozone / UV predictions from GET /api/v1/predictions/24h.
  * No values are generated in the browser. If the backend cannot produce a
  * real forecast, the page shows the reason instead of a number. */
-let pmap, pmarker;
+let pmap, pmarker, qp;
 const P_BOUNDS = L.latLngBounds([6.0, 68.0], [37.5, 97.5]);
-const RISK_COLOR = {'Low':'#2ea043','Moderate':'#d4a72c','High':'#e8801a','Very High':'#dc3545','Extreme':'#8b5cf6'};
+const RISK_COLOR = UV_COLOR;   /* WHO category colours, defined once in js/main.js */
 
 const esc = v => String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const num = (v, d=1) => v === null || v === undefined || Number.isNaN(Number(v)) ? '—' : Number(v).toFixed(d);
@@ -24,14 +24,15 @@ async function forecast(lat, lon) {
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return showError('Invalid coordinates', 'Enter a numeric latitude and longitude.');
   if (!P_BOUNDS.contains([lat, lon])) return showError('Outside supported area', 'Choose a point inside India.');
   $('#latitude').value = lat.toFixed(5); $('#longitude').value = lon.toFixed(5);
+  if (qp) qp.sync(lat, lon);
   pmarker.setLatLng([lat, lon]); saveCoords(lat, lon);
-  $('#out').innerHTML = '<div class="card"><p>Running the forecast models… (fetching latest CAMS composition and weather forecast)</p></div>';
+  $('#out').innerHTML = '<div class="card state">Running the forecast models… (fetching latest CAMS composition and weather forecast)</div>';
   try {
-    render(await API.getPredictions24h(lat, lon));
+    render(await API.getPredictions24h(lat, lon, $('#model').value));
   } catch (e) {
-    const msg = e.message || 'Unknown error';
-    if (/model_not_trained|artifacts/i.test(msg)) showError('Predictions unavailable', 'The forecast models have not been trained on this server yet. ' + msg);
-    else if (/provider|unavailable|Open-Meteo/i.test(msg)) showError('Predictions unavailable', 'A required live data provider did not respond, so no forecast was produced. ' + msg);
+    const msg = e.message || 'Unknown error', why = (e.code || '') + ' ' + msg;
+    if (/model_not_trained|artifacts/i.test(why)) showError('Predictions unavailable', 'The forecast models have not been trained on this server yet. ' + msg);
+    else if (/provider|unavailable|Open-Meteo/i.test(why)) showError('Predictions unavailable', 'A required live data provider did not respond, so no forecast was produced. ' + msg);
     else showError('Prediction failed', msg);
   }
 }
@@ -53,7 +54,7 @@ function render(d) {
     <h2>Next 24 hours${loadCoords()?.name ? ` · ${esc(loadCoords().name)}` : ''}</h2><p class="mut">${num(d.location.latitude,4)}° N, ${num(d.location.longitude,4)}° E · times shown in IST (UTC+5:30)</p></div></div>
   <div class="pred-kpis">
     <div class="card kpi peak" style="--c:${RISK_COLOR[pk.risk] || '#999'}"><div class="l">Peak UV</div><div class="v">${num(pk.value,1)}</div>
-      <div class="s">${badge(pk.risk)} at ${esc(istTime(pk.time_ist))} · range ${num(pk.lower,1)}–${num(pk.upper,1)}</div></div>
+      <div class="s">${badge(pk.risk)} at ${esc(istTime(pk.time_ist))} · range ${num(pk.lower,1)}–${num(pk.upper,1)}</div>${uvScale(pk.value)}</div>
     <div class="card kpi"><div class="l">High-risk window (UV 6+)</div><div class="window-list">${win}</div>${winUpper}</div>
     <div class="card kpi"><div class="l">Surface ozone (max)</div><div class="v">${num(d.summary.max_ozone,0)}<small>µg/m³</small></div>
       <div class="s">min ${num(d.summary.min_ozone,0)} µg/m³ over the next 24 h</div></div>
@@ -99,10 +100,10 @@ function render(d) {
     ds('90% range', P.map(p => p[key][lo]), color, {borderWidth: 0, pointRadius: 0, fill: '-1', backgroundColor: color + '30'}),
   ];
   const noUpper = {o: {plugins: {legend: {labels: {filter: it => it.text !== 'Upper range'}}}}};
-  chart('uvch', 'line', labels, [...band('uv', 'lower', 'upper', '#e8801a'),
-    ds('Forecast UV index', P.map(p => p.uv.value), '#b5541a', {fill: false, pointRadius: P.map((_, i) => i === peakIdx ? 6 : 2)})], 'UV index', {x: 'Time (IST)', ...noUpper});
-  chart('ozch', 'line', labels, [...band('ozone', 'lower', 'upper', '#168779'),
-    ds('Forecast surface O₃', P.map(p => p.ozone.value), '#0f5f55', {fill: false})], 'µg/m³', {x: 'Time (IST)', ...noUpper});
+  chart('uvch', 'line', labels, [...band('uv', 'lower', 'upper', '#e48a2c'),
+    ds('Forecast UV index', P.map(p => p.uv.value), '#b8620b', {fill: false, pointRadius: P.map((_, i) => i === peakIdx ? 6 : 2)})], 'UV index', {x: 'Time (IST)', ...noUpper});
+  chart('ozch', 'line', labels, [...band('ozone', 'lower', 'upper', '#5b6fd6'),
+    ds('Forecast surface O₃', P.map(p => p.ozone.value), '#2e43b8', {fill: false})], 'µg/m³', {x: 'Time (IST)', ...noUpper});
   if (window.lucide) lucide.createIcons();
 }
 
@@ -123,5 +124,19 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#gps').addEventListener('click', useGps);
   $('#run').addEventListener('click', () => forecast($('#latitude').value, $('#longitude').value));
   $('#latitude').value = start.lat; $('#longitude').value = start.lon;
+  qp = quickPick($('#preset'), (lat, lon) => { pmap.setView([lat, lon], 8); forecast(lat, lon); });
+  qp.sync(start.lat, start.lon);
+  try { const m = localStorage.getItem('og-model'); if (m !== null) $('#model').value = m; } catch (e) {}
+  $('#model').addEventListener('change', () => {
+    try { localStorage.setItem('og-model', $('#model').value); } catch (e) {}
+    forecast($('#latitude').value, $('#longitude').value);
+  });
+  API.getModels().then(info => {
+    for (const opt of $('#model').options) {
+      const m = info.models[opt.value];
+      if (opt.value === '') opt.textContent = `Server default (${info.default === 'lstm' ? 'LSTM' : 'XGBoost'})`;
+      else if (m && !m.available) { opt.disabled = true; opt.textContent += ' (not trained)'; }
+    }
+  }).catch(() => {});
   if (loadCoords()) forecast(start.lat, start.lon);
 });

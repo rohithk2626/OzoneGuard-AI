@@ -1,0 +1,166 @@
+{
+  "architecture": "encoder-decoder LSTM (seq2seq), direct 24 h output",
+  "enc_len": 48,
+  "dec_len": 24,
+  "hidden_size": 96,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "enc_features": [
+    "cams_ozone",
+    "cams_uv_index",
+    "cams_uv_index_clear_sky",
+    "cams_nitrogen_dioxide",
+    "cams_aerosol_optical_depth",
+    "cams_ozone_missing",
+    "cams_uv_index_missing",
+    "wx_temperature_2m",
+    "wx_relative_humidity_2m",
+    "wx_dew_point_2m",
+    "wx_surface_pressure",
+    "wx_cloud_cover",
+    "wx_precipitation",
+    "wx_shortwave_radiation",
+    "wx_wind_speed_10m",
+    "wx_wind_dir_sin",
+    "wx_wind_dir_cos",
+    "wx_uv_index",
+    "wx_uv_index_clear_sky",
+    "solar_elevation",
+    "cos_zenith",
+    "sin_solar_time",
+    "cos_solar_time",
+    "sin_doy",
+    "cos_doy",
+    "earth_sun_distance_au",
+    "daylight_hours",
+    "lat",
+    "lon",
+    "elevation_m"
+  ],
+  "dec_features": [
+    "wx_temperature_2m",
+    "wx_relative_humidity_2m",
+    "wx_dew_point_2m",
+    "wx_surface_pressure",
+    "wx_cloud_cover",
+    "wx_precipitation",
+    "wx_shortwave_radiation",
+    "wx_wind_speed_10m",
+    "wx_wind_dir_sin",
+    "wx_wind_dir_cos",
+    "wx_uv_index",
+    "wx_uv_index_clear_sky",
+    "solar_elevation",
+    "cos_zenith",
+    "sin_solar_time",
+    "cos_solar_time",
+    "sin_doy",
+    "cos_doy",
+    "earth_sun_distance_au",
+    "daylight_hours",
+    "lat",
+    "lon",
+    "elevation_m",
+    "lead_frac"
+  ],
+  "targets": [
+    "cams_ozone",
+    "cams_uv_index"
+  ],
+  "scaler": {
+    "cams_ozone": [
+      80.51853149500245,
+      46.97972286369034
+    ],
+    "cams_uv_index": [
+      1.559125651316716,
+      2.5559117874009307
+    ],
+    "cams_uv_index_clear_sky": [
+      2.0167568828334037,
+      3.203780330007293
+    ],
+    "cams_nitrogen_dioxide": [
+      16.983875220921146,
+      21.477563699018486
+    ],
+    "cams_aerosol_optical_depth": [
+      0.4619801612448951,
+      0.3087492548551975
+    ],
+    "wx_temperature_2m": [
+      24.199788762146177,
+      7.563923466264888
+    ],
+    "wx_relative_humidity_2m": [
+      69.05422123644557,
+      22.448160088276406
+    ],
+    "wx_dew_point_2m": [
+      17.058855970990003,
+      8.667020526161252
+    ],
+    "wx_surface_pressure": [
+      964.6499834530348,
+      67.40548082122035
+    ],
+    "wx_cloud_cover": [
+      51.198773060132375,
+      43.39621067333129
+    ],
+    "wx_precipitation": [
+      0.19624225461202646,
+      0.9240713036087356
+    ],
+    "wx_shortwave_radiation": [
+      210.4530506266723,
+      284.0212449973893
+    ],
+    "wx_wind_speed_10m": [
+      9.11909607801718,
+      5.39185861607298
+    ],
+    "wx_uv_index": [
+      1.8068374172651738,
+      2.6027881216839632
+    ],
+    "wx_uv_index_clear_sky": [
+      2.1095371250528094,
+      2.8773536549656122
+    ],
+    "solar_elevation": [
+      0.5028616461599175,
+      43.70646527540321
+    ],
+    "earth_sun_distance_au": [
+      1.0007722273201676,
+      0.011628389454873427
+    ],
+    "daylight_hours": [
+      12.180003774446455,
+      0.9862968824847135
+    ],
+    "lat": [
+      22.442,
+      6.452767571618657
+    ],
+    "lon": [
+      80.22333333333334,
+      6.1418918547590495
+    ],
+    "elevation_m": [
+      416.4,
+      680.5044501446457
+    ]
+  },
+  "target_scaler": {
+    "cams_ozone": [
+      80.51853149500245,
+      46.97972286369034
+    ],
+    "cams_uv_index": [
+      1.559125651316716,
+      2.5559117874009307
+    ]
+  }
+}

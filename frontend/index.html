@@ -4,9 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Ozone, UV and weather for any point in India: real history, live conditions and a 24-hour machine-learning forecast.">
-  <meta name="theme-color" content="#f4f7f4">
+  <meta name="theme-color" content="#ffffff">
   <title>OzoneGuard AI · A clearer view of UV risk</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/home.css">
 </head>
 <body>
   <div id="nav"></div>
@@ -14,46 +15,103 @@
     <section class="hero">
       <div class="wrap">
         <div class="hero-copy">
-          <div class="hero-kicker"><i data-lucide="sparkles"></i> Ozone and UV awareness, made local</div>
-          <h1>See the sky differently. <span>Make informed choices.</span></h1>
-          <p>Explore how ozone, sunlight and weather shape UV exposure. OzoneGuard AI brings environmental context and practical sun-safety guidance together in one place.</p>
-          <div class="btns">
-            <a class="btn" href="locations.html">Explore local conditions <i data-lucide="arrow-up-right"></i></a>
-            <a class="btn alt" href="#understand">Understand UV risk</a>
+          <p class="eyebrow">Ozone and UV awareness, made local</p>
+          <h1>See the sky differently. Make informed choices.</h1>
+          <p class="hero-lead">Explore how ozone, sunlight and weather shape UV exposure. OzoneGuard AI brings environmental context and practical sun-safety guidance together in one place.</p>
+          <div class="btn-row">
+            <a class="btn" href="locations.html">Explore local conditions</a>
+            <a class="btn ghost" href="#understand">Understand UV risk</a>
           </div>
-          <div class="hero-proof"><span class="proof-dot"></span><span>Live data, real history and trained 24-hour forecasts for any point in India</span></div>
+          <p class="hero-proof">Live data, real history and trained 24-hour forecasts for any point in India</p>
         </div>
-        <div class="hero-visual">
-          <div class="hero-photo">
-            <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&amp;fit=crop&amp;w=1100&amp;q=85" alt="Sunlight falling across a mountain landscape beneath an open sky" fetchpriority="high">
-            <div class="photo-caption"><strong>Atmosphere in perspective</strong><span>Small changes above us shape the conditions below.</span></div>
-          </div>
-          <div class="visual-chip top"><i data-lucide="layers-3"></i><span><strong>Ozone layer</strong><small>A natural shield in the stratosphere</small></span></div>
-          <div class="visual-chip bottom"><i data-lucide="sun-medium"></i><span><strong>UV awareness</strong><small>Understand conditions. Plan with care.</small></span></div>
-        </div>
+
+        <figure class="atmos">
+          <svg viewBox="0 0 520 452" role="img" aria-labelledby="atmos-title atmos-desc">
+            <title id="atmos-title">Two kinds of ozone</title>
+            <desc id="atmos-desc">A cross-section of the atmosphere from the ground to 50 kilometres. The ozone layer, about 15 to 35 kilometres up in the stratosphere, absorbs most incoming ultraviolet light; some ultraviolet still reaches the ground. Near the ground, ozone also forms from sunlight acting on pollution.</desc>
+            <defs>
+              <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#101639"/>
+                <stop offset=".42" stop-color="#22307f"/>
+                <stop offset=".74" stop-color="#5d75cf"/>
+                <stop offset="1" stop-color="#d9e1f7"/>
+              </linearGradient>
+              <marker id="uv-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0L10 5L0 10z" fill="#d7c8ff"/>
+              </marker>
+            </defs>
+
+            <!-- altitude axis -->
+            <g class="atmos-axis">
+              <text x="40" y="18" text-anchor="end">km</text>
+              <g text-anchor="end">
+                <text x="40" y="404">0</text><text x="40" y="332">10</text><text x="40" y="260">20</text>
+                <text x="40" y="188">30</text><text x="40" y="116">40</text><text x="40" y="44">50</text>
+              </g>
+              <path d="M46 40V400M46 400h5M46 328h5M46 256h5M46 184h5M46 112h5M46 40h5"/>
+            </g>
+
+            <!-- sky and layers -->
+            <rect x="52" y="24" width="468" height="376" fill="url(#sky)"/>
+            <rect x="52" y="148" width="468" height="144" fill="#a9b7ff" opacity=".1"/>
+            <path d="M52 148H520M52 292H520" stroke="#b8c4ff" stroke-opacity=".35" stroke-dasharray="2 4"/>
+            <path d="M52 313.6H520" stroke="#ffffff" stroke-opacity=".55" stroke-dasharray="6 5"/>
+            <text class="atmos-small" x="72" y="306" fill="#eef1ff">Tropopause, about 12 km</text>
+
+            <!-- ozone concentration profile, peaking near 25 km -->
+            <path d="M372 400 C376 372 379 338 383 316 C390 294 407 266 432 244 C451 226 458 216 458 212 C455 198 441 180 420 166 C402 156 390 144 383 128 C376 110 374 80 372 40 L372 40 Z" fill="#8fa2ff" fill-opacity=".38" stroke="#c3cdff" stroke-width="1.5"/>
+            <path d="M372 40V400" stroke="#c3cdff" stroke-opacity=".5"/>
+            <text class="atmos-small" x="465" y="208" fill="#e7ebff">Ozone</text>
+            <text class="atmos-small" x="465" y="223" fill="#e7ebff">amount</text>
+
+            <!-- ultraviolet from the Sun: most is absorbed in the ozone layer, some reaches the ground -->
+            <text class="atmos-small" x="262" y="50" fill="#d7c8ff">Ultraviolet</text>
+            <path d="M268 60 L286 206" stroke="#d7c8ff" stroke-width="2" marker-end="url(#uv-head)"/>
+            <path d="M292 60 L310 224" stroke="#d7c8ff" stroke-width="2" marker-end="url(#uv-head)"/>
+            <circle cx="287" cy="214" r="9" fill="#d7c8ff" fill-opacity=".25"/>
+            <circle cx="311" cy="232" r="9" fill="#d7c8ff" fill-opacity=".25"/>
+            <path d="M316 60 L350 392" stroke="#d7c8ff" stroke-width="2" marker-end="url(#uv-head)"/>
+
+            <!-- labels -->
+            <text class="atmos-region" x="72" y="76" fill="#aab4e6">Stratosphere</text>
+            <text class="atmos-label" x="72" y="206" fill="#ffffff">Ozone layer</text>
+            <text class="atmos-text" fill="#dfe4ff"><tspan x="72" y="228">A natural shield in the</tspan><tspan x="72" y="246">stratosphere. Measured in</tspan><tspan x="72" y="264">Dobson Units (DU) by NASA OMI.</tspan></text>
+            <text class="atmos-region" x="72" y="352" fill="#26306a">Troposphere</text>
+
+            <!-- ground -->
+            <rect x="52" y="400" width="468" height="52" fill="#161d45"/>
+            <g fill="#8fa2ff" opacity=".9">
+              <circle cx="300" cy="390" r="2.2"/><circle cx="322" cy="384" r="2.2"/><circle cx="382" cy="388" r="2.2"/>
+              <circle cx="404" cy="381" r="2.2"/><circle cx="428" cy="391" r="2.2"/><circle cx="452" cy="385" r="2.2"/><circle cx="476" cy="390" r="2.2"/>
+            </g>
+            <text class="atmos-label atmos-label--ground" x="72" y="423" fill="#ffffff">Ground-level ozone</text>
+            <text class="atmos-small" x="72" y="441" fill="#b9c2e8">Formed by sunlight acting on pollution. Measured in µg/m³ by CAMS.</text>
+          </svg>
+          <figcaption>Small changes above us shape the conditions below. OzoneGuard shows both kinds of ozone and keeps their units separate.</figcaption>
+        </figure>
       </div>
     </section>
 
-    <section id="understand">
+    <section id="understand" class="basics">
       <div class="wrap">
         <div class="section-intro">
-          <span class="eyebrow">The basics</span>
+          <p class="eyebrow">The basics</p>
           <h2>One atmosphere. Several connected signals.</h2>
           <p>Ozone, clouds, sunlight and local weather all play a part in the UV conditions we experience.</p>
         </div>
-        <div class="grid">
-          <article class="card">
-            <div class="card-icon"><i data-lucide="shield"></i></div>
+        <div class="basics-list">
+          <article>
+            <i data-lucide="shield"></i>
             <h3>Ozone is a natural shield</h3>
             <p>High in the stratosphere, ozone absorbs much of the Sun’s harmful ultraviolet radiation before it reaches Earth’s surface.</p>
           </article>
-          <article class="card">
-            <div class="card-icon"><i data-lucide="sun"></i></div>
+          <article>
+            <i data-lucide="sun"></i>
             <h3>UV changes through the day</h3>
             <p>Solar angle, season, latitude, altitude, clouds and atmospheric conditions can all influence UV intensity.</p>
           </article>
-          <article class="card">
-            <div class="card-icon"><i data-lucide="cloud-sun"></i></div>
+          <article>
+            <i data-lucide="cloud-sun"></i>
             <h3>Weather adds context</h3>
             <p>Clouds and other local conditions affect exposure, but a cool or overcast day does not necessarily mean UV is low.</p>
           </article>
@@ -61,72 +119,73 @@
       </div>
     </section>
 
-    <section class="impact-section">
-      <div class="wrap impact-panel">
-        <div>
-          <span class="eyebrow">Everyday protection</span>
+    <section class="uv-section">
+      <div class="wrap uv-panel">
+        <div class="uv-copy">
+          <p class="eyebrow">Everyday protection</p>
           <h2>Sun safety starts with awareness.</h2>
           <p>High UV exposure can affect skin and eyes. When UV is elevated, shade, protective clothing, a wide-brimmed hat, sunglasses and broad-spectrum sunscreen can help reduce exposure.</p>
-          <a class="btn" href="predictions.html" style="margin-top:22px">Explore UV guidance <i data-lucide="arrow-up-right"></i></a>
+          <a class="btn" href="predictions.html">Explore UV guidance</a>
         </div>
-        <div class="impact-photo">
-          <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&amp;fit=crop&amp;w=1000&amp;q=85" alt="A sunlit natural landscape with open sky" loading="lazy">
+        <div class="uv-reference">
+          <h3>The UV index scale</h3>
+          <p>Categories from the World Health Organization’s Global Solar UV Index, used on every page of OzoneGuard.</p>
+          <div data-uv-scale></div>
+          <div data-uv-guide></div>
         </div>
       </div>
     </section>
 
-    <section class="soft-section">
+    <section class="platform">
       <div class="wrap">
-        <div class="section-intro center">
-          <span class="eyebrow">Explore the platform</span>
+        <div class="section-intro">
+          <p class="eyebrow">Explore the platform</p>
           <h2>Environmental information, made easier to explore.</h2>
           <p>Move from a local overview to forecasts and historical patterns with dedicated tools for each view.</p>
         </div>
-        <div class="grid">
-          <article class="card">
-            <span class="feature-number">01 / LOCATION</span>
-            <div class="card-icon" style="margin-top:14px"><i data-lucide="map-pin"></i></div>
+        <div class="tools">
+          <a class="tool" href="locations.html">
+            <span class="tool-when">Now</span>
+            <i data-lucide="map-pin"></i>
             <h3>Explore a location</h3>
             <p>Click any point in India, or use GPS, to see its live weather, UV index and satellite ozone.</p>
-          </article>
-          <article class="card">
-            <span class="feature-number">02 / FORECAST</span>
-            <div class="card-icon" style="margin-top:14px"><i data-lucide="trending-up"></i></div>
+          </a>
+          <a class="tool" href="predictions.html">
+            <span class="tool-when">Next 24 hours</span>
+            <i data-lucide="trending-up"></i>
             <h3>View UV predictions</h3>
             <p>See the next 24 hours of ground-level ozone and UV index from the trained models, with honest ranges.</p>
-          </article>
-          <article class="card">
-            <span class="feature-number">03 / TRENDS</span>
-            <div class="card-icon" style="margin-top:14px"><i data-lucide="chart-no-axes-combined"></i></div>
+          </a>
+          <a class="tool" href="analytics.html">
+            <span class="tool-when">Since August 2022</span>
+            <i data-lucide="chart-no-axes-combined"></i>
             <h3>Understand patterns</h3>
             <p>Explore real ozone, UV and weather history for any period since August 2022.</p>
-          </article>
-          <article class="card">
-            <span class="feature-number">04 / CONTEXT</span>
-            <div class="card-icon" style="margin-top:14px"><i data-lucide="layout-dashboard"></i></div>
+          </a>
+          <a class="tool" href="dashboard.html">
+            <span class="tool-when">Your places</span>
+            <i data-lucide="layout-dashboard"></i>
             <h3>Bring it together</h3>
             <p>Save your places and see now, next and recent conditions for each one on the dashboard.</p>
-          </article>
+          </a>
         </div>
-        <p style="margin-top:18px;font-size:.8rem">Ozone and UV values come from the CAMS atmospheric model (Copernicus/ECMWF), not from ground sensors. This is an educational project, not an official monitoring or medical advice service.</p>
+        <p class="fine-print">Ozone and UV values come from the CAMS atmospheric model (Copernicus/ECMWF), not from ground sensors. This is an educational project, not an official monitoring or medical advice service.</p>
       </div>
     </section>
 
-    <section>
-      <div class="wrap">
-        <div class="cta-panel">
-          <div>
-            <span class="eyebrow">Take a closer look</span>
-            <h2>Start with a place you know.</h2>
-            <p>Pick a point on the map and see how local environmental context can make UV information easier to understand.</p>
-          </div>
-          <a class="btn" href="locations.html">Explore locations <i data-lucide="arrow-right"></i></a>
+    <section class="cta">
+      <div class="wrap cta-panel">
+        <div>
+          <p class="eyebrow">Take a closer look</p>
+          <h2>Start with a place you know.</h2>
+          <p>Pick a point on the map and see how local environmental context can make UV information easier to understand.</p>
         </div>
+        <a class="btn" href="locations.html">Explore locations</a>
       </div>
     </section>
   </main>
   <div id="foot"></div>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/account.js"></script>

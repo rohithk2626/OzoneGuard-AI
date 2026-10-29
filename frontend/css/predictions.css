@@ -1,24 +1,42 @@
-/* Predictions (FUTURE) page */
-.pred-map { height: 320px; }
-.pred-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
-.pred-head h2 { margin: 4px 0 2px; }
-.pred-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-.kpi .v { color: var(--navy); font: 800 1.7rem Manrope, sans-serif; letter-spacing: -.03em; }
-.kpi .v small { margin-left: 4px; color: var(--mut); font-size: .8rem; font-weight: 600; }
-.kpi .l { color: var(--mut); font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
-.kpi .s { margin-top: 4px; color: var(--mut); font-size: .84rem; }
-.kpi.peak { border-left: 5px solid var(--c, #999); }
-.quality-high { border-left: 5px solid #3a8f5c; }
-.quality-medium { border-left: 5px solid #d6a72c; }
-.quality-low { border-left: 5px solid #d9583f; }
-.window-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.window-list span { padding: 5px 11px; border-radius: 99px; background: #fdeee4; color: #8a3d12; font-size: .82rem; font-weight: 700; }
-.ptable td.num, .ptable th.num { text-align: right; font-variant-numeric: tabular-nums; }
-.ptable tr.peak-row td { background: #fff7e6; font-weight: 700; }
-.range { color: var(--mut); font-size: .8rem; }
-.facts { display: grid; gap: 8px; margin-top: 10px; font-size: .9rem; }
-.facts div { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 7px; border-bottom: 1px solid var(--bd); }
+/* Results layout shared by Predictions (FUTURE), Analytics (PAST) and the Dashboard. */
+.pred-map { min-height: 440px; }
+.pred-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.pred-head h2 { margin: 0 0 4px; font-size: 1.75rem; }
+.pred-head .eyebrow { margin-bottom: 4px; }
+.pred-head p { font-size: .9375rem; }
+
+/* Key figures: one strip of cells rather than separate floating cards. */
+.pred-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); overflow: hidden; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+.pred-kpis > .card { border: 0; border-radius: 0; box-shadow: 1px 0 var(--line), 0 1px var(--line); }
+.pred-kpis > .note, .pred-kpis > .card:only-child { grid-column: 1 / -1; }
+.kpi { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; }
+.kpi .l { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .875rem; font-weight: 500; }
+.kpi .s { color: var(--muted); font-size: .875rem; line-height: 1.5; }
+.kpi .s .badge { margin-right: 4px; }
+/* The colour swatch on a UV figure is its WHO risk colour. */
+.kpi.peak .l::before { width: 10px; height: 10px; flex: none; border-radius: 2px; background: var(--c, #8a90a8); content: ''; }
+.quality-high .v { color: var(--ok); }
+.quality-medium .v { color: #8a6400; }
+.quality-low .v { color: var(--err); }
+
+.window-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.window-list span { padding: 3px 10px; border: 1px solid color-mix(in srgb, var(--uv-high) 45%, white); border-radius: 999px; background: color-mix(in srgb, var(--uv-high) 12%, white); color: var(--ink); font-size: .875rem; font-weight: 600; }
+.window-list em { color: var(--muted); font-size: .875rem; font-style: normal; }
+
+.ptable td.num, .ptable th.num { text-align: right; }
+.ptable td:first-child { white-space: nowrap; }
+.ptable tr.peak-row td { background: #fff4e6; }
+.ptable tr.peak-row td:first-child { box-shadow: inset 3px 0 var(--uv-high); font-weight: 600; }
+.range { color: var(--muted); font-size: .75rem; white-space: nowrap; }
+
+.facts { display: grid; margin-top: 8px; font-size: .9375rem; }
+.facts div { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px solid var(--line); }
 .facts div:last-child { border-bottom: 0; }
-.facts b { color: var(--navy); text-align: right; }
-.tip-list { margin: 8px 0 0 18px; color: var(--mut); font-size: .92rem; }
-@media (max-width: 700px) { .pred-map { height: 260px; } .ptable .hide-sm { display: none; } }
+.facts span { color: var(--muted); }
+.facts b { font-weight: 600; text-align: right; }
+.tip-list { display: grid; gap: 4px; margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: .9375rem; }
+
+.pred-kpis:has(> .card:nth-child(3):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1080px) { .pred-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 720px) { .pred-map { min-height: 300px; } .ptable .hide-sm { display: none; } }
+@media (max-width: 600px) { .pred-kpis, .pred-kpis:has(> .card:nth-child(3):last-child) { grid-template-columns: 1fr; } }

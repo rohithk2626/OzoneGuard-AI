@@ -1,0 +1,20 @@
+# Keep secrets, history and local caches out of the Docker image.
+# Pass secrets at run time instead (docker-compose env_file: ../.env).
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+**/__pycache__
+*.pyc
+.pytest_cache
+.venv
+venv
+data/raw
+data/intermediate
+data/processed
+logs
+docs
+tests
+models/**/*.joblib
+models/**/*.pt

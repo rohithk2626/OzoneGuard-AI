@@ -7,7 +7,10 @@ Live inference path (mirrors training exactly through ml.features.build_rows):
     -> Open-Meteo Forecast API (best_match): weather forecast for the next 24 h
     -> NOAA solar geometry                : computed
     -> ml.features.build_rows             : identical feature code as training
-    -> ozone model -> UV model            : XGBoost direct multi-horizon models (loaded from models/*_model.json)
+    -> ozone model -> UV model            : one of two interchangeable model families
+                                            * "xgboost" (default): direct multi-horizon XGBoost, models/xgboost/
+                                            * "lstm": encoder-decoder LSTM (NumPy forward pass), models/lstm/
+                                            chosen per request (?model=) or by env OZONEGUARD_MODEL
     -> split-conformal 90 % intervals, WHO UV risk, peak UV, high-risk window
 
 CAMS values AFTER the issue hour are discarded before feature building so no
@@ -16,6 +19,7 @@ future composition values can enter the features.
 from __future__ import annotations
 
 import json
+import os
 import threading
 import time
 from datetime import datetime, timedelta, timezone
@@ -27,8 +31,10 @@ import numpy as np
 import pandas as pd
 import requests
 
+from backend.core.errors import describe_failure
 from ml import config
 from ml.features import build_rows
+from ml.lstm import NumpyLSTMForecaster, forecast_frame
 from ml.quality import quality_tier
 from ml.risk import RISK_LABELS, uv_risk_index, uv_risk_label
 
@@ -47,7 +53,19 @@ class PredictionUnavailable(RuntimeError):
 
 
 # ------------------------------------------------------------------------- artifacts
-def _load_model(target: str):
+MODEL_NAMES = tuple(config.MODEL_DIRS)
+
+
+def resolve_model(name: str | None = None) -> str:
+    """Request value -> env OZONEGUARD_MODEL -> config.DEFAULT_MODEL."""
+    name = (name or os.environ.get("OZONEGUARD_MODEL") or config.DEFAULT_MODEL).strip().lower()
+    if name not in config.MODEL_DIRS:
+        raise PredictionUnavailable(f"Unknown model '{name}'. Choose one of: {', '.join(MODEL_NAMES)}.",
+                                    status="unknown_model")
+    return name
+
+
+def _load_model(target: str, model_dir=config.MODELS_XGBOOST):
     """Load one trained model.
 
     Prefers XGBoost's native JSON file (<target>_model.json), which is portable across
@@ -55,30 +73,42 @@ def _load_model(target: str):
     of XGBoost's internal memory snapshot and can fail to open on a different machine
     ("XGBoostError: input stream corrupted"), so it is only the fallback.
     """
-    native = config.MODELS / f"{target}_model.json"
+    native = model_dir / f"{target}_model.json"
     if native.exists():
         from xgboost import XGBRegressor
         model = XGBRegressor()
         model.load_model(native)
         return model
-    return joblib.load(config.MODELS / f"{target}_model.joblib")
+    return joblib.load(model_dir / f"{target}_model.joblib")
 
 
-@lru_cache(maxsize=1)
-def load_artifacts() -> dict[str, Any]:
-    m = config.MODELS
+@lru_cache(maxsize=len(config.MODEL_DIRS))
+def load_artifacts(model: str | None = None) -> dict[str, Any]:
+    name = resolve_model(model)
+    m = config.MODEL_DIRS[name]
     needed = ["feature_schema.json", "conformal.json", "model_metadata.json"]
+    if name == "lstm":
+        needed += ["lstm_weights.npz", "lstm_config.json"]
     missing = [n for n in needed if not (m / n).exists()]
-    missing += [f"{t}_model.json or {t}_model.joblib" for t in ("ozone", "uv")
-                if not (m / f"{t}_model.json").exists() and not (m / f"{t}_model.joblib").exists()]
+    if name == "xgboost":
+        missing += [f"{t}_model.json or {t}_model.joblib" for t in ("ozone", "uv")
+                    if not (m / f"{t}_model.json").exists() and not (m / f"{t}_model.joblib").exists()]
     if missing:
+        cmd = "python -m ml.train_lstm" if name == "lstm" else "python -m ml.train_xgboost"
         raise PredictionUnavailable(
-            f"Model artifacts not found ({', '.join(missing)}). Run: python -m ml.train", status="model_not_trained")
+            f"{name} model artifacts not found in {m.relative_to(config.ROOT)} ({', '.join(missing)}). Run: {cmd}",
+            status="model_not_trained")
     metrics = json.loads((m / "metrics.json").read_text()) if (m / "metrics.json").exists() else {}
-    clim = pd.read_parquet(m / "climatology.parquet") if (m / "climatology.parquet").exists() else None
+    clim_path = config.MODELS / "climatology.parquet"
+    clim = pd.read_parquet(clim_path) if clim_path.exists() else None
+    if name == "lstm":
+        net = NumpyLSTMForecaster(m)
+        models = {"lstm": net, "ozone": net, "uv": net}
+    else:
+        models = {"ozone": _load_model("ozone", m), "uv": _load_model("uv", m)}
     return {
-        "ozone": _load_model("ozone"),
-        "uv": _load_model("uv"),
+        "name": name,
+        **models,
         "schema": json.loads((m / "feature_schema.json").read_text()),
         "conformal": json.loads((m / "conformal.json").read_text()),
         "meta": json.loads((m / "model_metadata.json").read_text()),
@@ -102,12 +132,12 @@ def fetch_live_frame(lat: float, lon: float) -> tuple[pd.DataFrame, dict]:
         aq = _fetch(AQ_URL, {"latitude": lat, "longitude": lon, "hourly": ",".join(config.CAMS_VARS),
                              "past_days": 3, "forecast_days": 2, "timezone": "GMT", "domains": "cams_global"})
     except Exception as exc:
-        raise PredictionUnavailable(f"CAMS composition data unavailable from Open-Meteo: {exc}", "provider_unavailable")
+        raise PredictionUnavailable(f"CAMS composition data unavailable from Open-Meteo: {describe_failure(exc)}.", "provider_unavailable")
     try:
         wx = _fetch(FC_URL, {"latitude": lat, "longitude": lon, "hourly": ",".join(config.WX_VARS),
                              "past_days": 3, "forecast_days": 3, "timezone": "GMT"})
     except Exception as exc:
-        raise PredictionUnavailable(f"Weather forecast unavailable from Open-Meteo: {exc}", "provider_unavailable")
+        raise PredictionUnavailable(f"Weather forecast unavailable from Open-Meteo: {describe_failure(exc)}.", "provider_unavailable")
     a = pd.DataFrame(aq["hourly"]).rename(columns={v: f"cams_{v}" for v in config.CAMS_VARS})
     w = pd.DataFrame(wx["hourly"]).rename(columns={v: f"wx_{v}" for v in config.WX_VARS})
     df = a.merge(w, on="time", how="outer")
@@ -167,11 +197,12 @@ _lock = threading.Lock()
 
 
 def predict_24h(lat: float, lon: float, now: datetime | None = None, frame: pd.DataFrame | None = None,
-                cell_meta: dict | None = None) -> dict:
-    art = load_artifacts()
+                cell_meta: dict | None = None, model: str | None = None) -> dict:
+    model = resolve_model(model)
+    art = load_artifacts(model)
     now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     issue = pd.Timestamp(now).floor("h")
-    key = (round(lat, 2), round(lon, 2), issue)
+    key = (round(lat, 2), round(lon, 2), issue, model)
     if frame is None:
         with _lock:
             hit = _cache.get(key)
@@ -203,9 +234,21 @@ def predict_24h(lat: float, lon: float, now: datetime | None = None, frame: pd.D
             status_notes.append(f"latest CAMS value missing for {c[:-2]}; model used remaining features")
 
     so = art["schema"]
-    oz_pred = np.maximum(art["ozone"].predict(rows[so["ozone"]["features"]]), 0.0)
-    rows["pred_ozone"] = oz_pred
-    uv_pred = np.maximum(art["uv"].predict(rows[so["uv"]["features"]]), 0.0)
+    if model == "lstm":
+        try:
+            seq = forecast_frame(art["lstm"], frame, issue, lat, lon, cell_meta.get("elevation_m"))
+        except ValueError as exc:
+            raise PredictionUnavailable(f"LSTM input window incomplete: {exc}")
+        seq = seq.set_index("target_time").reindex(rows["target_time"])
+        oz_pred = np.maximum(seq["pred_ozone"].to_numpy(dtype=float), 0.0)
+        uv_pred = np.maximum(seq["pred_uv"].to_numpy(dtype=float), 0.0)
+        if not (np.isfinite(oz_pred).all() and np.isfinite(uv_pred).all()):
+            raise PredictionUnavailable("LSTM produced no value for some forecast hours.")
+        rows["pred_ozone"] = oz_pred
+    else:
+        oz_pred = np.maximum(art["ozone"].predict(rows[so["ozone"]["features"]]), 0.0)
+        rows["pred_ozone"] = oz_pred
+        uv_pred = np.maximum(art["uv"].predict(rows[so["uv"]["features"]]), 0.0)
     uv_pred = np.where(rows["solar_elevation"].to_numpy() < -1.0, 0.0, uv_pred)
     lead = rows["lead_h"].to_numpy()
     oz_lo, oz_hi = _conformal(art["conformal"]["ozone"], "ozone", lead, oz_pred)
@@ -288,7 +331,7 @@ def predict_24h(lat: float, lon: float, now: datetime | None = None, frame: pd.D
                                    "They are empirical ranges, not a guarantee and not a 'confidence' score."},
         "prediction_quality": {"tier": quality, "distance_to_nearest_training_point_km": _r(dist_km, 1),
                                "explanation": explanation, "evidence": evidence},
-        "model": {"version": meta.get("model_version"), "dataset_version": meta.get("dataset_version"),
+        "model": {"name": model, "version": meta.get("model_version"), "dataset_version": meta.get("dataset_version"),
                   "ozone_algorithm": meta["models"]["ozone"]["algorithm"], "uv_algorithm": meta["models"]["uv"]["algorithm"],
                   "uv_uses_predicted_ozone": bool(so["uv"].get("uses_predicted_ozone")),
                   "trained_at": meta.get("trained_at")},

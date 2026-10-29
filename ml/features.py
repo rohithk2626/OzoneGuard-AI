@@ -3,7 +3,7 @@
 Forecast formulation: DIRECT multi-horizon. One row = (location, issue time t,
 lead h ∈ 1..24). Target = value at T = t + h. A single model per target is
 trained across all horizons with ``lead_h`` as a feature (benchmarked against
-per-horizon models in ml/train.py).
+per-horizon models in ml/train_xgboost.py).
 
 Information-set rule (enforced by tests/test_ml_leakage.py):
 * CAMS values (ozone, UV, NO2, AOD) are used ONLY at times <= t.

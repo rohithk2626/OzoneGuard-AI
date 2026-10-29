@@ -23,6 +23,7 @@ import numpy as np
 import pandas as pd
 import requests
 
+from backend.core.errors import describe_failure
 from ml.risk import RISK_LABELS, uv_risk_label
 
 AQ_URL = "https://air-quality-api.open-meteo.com/v1/air-quality"
@@ -91,12 +92,12 @@ def fetch_hourly(lat: float, lon: float, start: date, end: date) -> tuple[pd.Dat
         aq = _fetch(AQ_URL, {"latitude": lat, "longitude": lon, "hourly": ",".join(AQ_VARS),
                              "start_date": s, "end_date": e, "timezone": "GMT", "domains": "cams_global"})
     except Exception as exc:
-        raise AnalyticsUnavailable(f"CAMS composition history unavailable from Open-Meteo: {exc}")
+        raise AnalyticsUnavailable(f"CAMS composition history unavailable from Open-Meteo: {describe_failure(exc)}.")
     try:
         wx = _fetch(HF_URL, {"latitude": lat, "longitude": lon, "hourly": ",".join(WX_VARS),
                              "start_date": s, "end_date": e, "timezone": "GMT"})
     except Exception as exc:
-        raise AnalyticsUnavailable(f"Weather history unavailable from Open-Meteo: {exc}")
+        raise AnalyticsUnavailable(f"Weather history unavailable from Open-Meteo: {describe_failure(exc)}.")
     df = pd.DataFrame(aq["hourly"]).merge(pd.DataFrame(wx["hourly"]), on="time", how="outer")
     df["time_utc"] = pd.to_datetime(df.pop("time"), utc=True)
     meta = {"cams_cell": [aq.get("latitude"), aq.get("longitude")],

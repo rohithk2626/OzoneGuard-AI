@@ -1,18 +1,66 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Real history of ground-level ozone, UV index and weather for any point in India."><title>Analytics · OzoneGuard AI</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/predictions.css"><link rel="stylesheet" href="css/analytics.css"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script></head><body><div id="nav"></div><main>
-<div class="page-h"><div class="wrap"><span class="eyebrow">Past · what already happened</span><h1>Environmental trends.</h1><p>Real ground-level ozone, UV index and weather history for any point in India, from August 2022 to today.</p></div></div>
-<section><div class="wrap">
- <div class="section-intro"><span class="eyebrow">Your view</span><h2>Choose a place and period.</h2><p>Pick a city, click the map or type coordinates, then choose the dates. Days are Indian days (IST).</p></div>
- <div class="bar">
-  <label>Quick pick<select id="preset"><option value="">Custom point</option></select></label>
-  <label>Latitude<input id="latitude" type="number" step="0.00001" min="6" max="37.6" placeholder="e.g. 17.38500"></label>
-  <label>Longitude<input id="longitude" type="number" step="0.00001" min="68" max="97.6" placeholder="e.g. 78.48670"></label>
-  <label>From<input type="date" id="from"></label>
-  <label>To<input type="date" id="to"></label>
-  <label>Group by<select id="per"><option>Daily</option><option>Weekly</option><option>Monthly</option></select></label>
-  <button class="btn" id="run" type="button"><i data-lucide="chart-line"></i>Show history</button>
- </div>
- <div class="range-row" role="group" aria-label="Quick date ranges"><span>Quick range:</span><button type="button" data-days="7">7 days</button><button type="button" data-days="30">30 days</button><button type="button" data-days="90">90 days</button><button type="button" data-days="365">1 year</button></div>
- <div id="map" class="pred-map"></div>
- <div id="out"><div class="card"><p>Loading history…</p></div></div>
-</div></section>
-</main><div id="foot"></div><script src="https://unpkg.com/lucide@latest"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="js/firebase-config.js"></script><script src="js/api.js"></script><script src="js/account.js"></script><script src="js/main.js"></script><script src="js/analytics.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Real history of ground-level ozone, UV index and weather for any point in India.">
+  <title>Analytics · OzoneGuard AI</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/locations.css">
+  <link rel="stylesheet" href="css/predictions.css">
+  <link rel="stylesheet" href="css/analytics.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+  <div id="nav"></div>
+  <main>
+    <div class="page-h">
+      <div class="wrap">
+        <div>
+          <p class="eyebrow">Past · what already happened</p>
+          <h1>Environmental trends.</h1>
+          <p>Real ground-level ozone, UV index and weather history for any point in India, from August 2022 to today.</p>
+        </div>
+      </div>
+    </div>
+    <section class="tool-page">
+      <div class="wrap">
+        <div class="picker">
+          <div class="picker-controls">
+            <div>
+              <p class="eyebrow">Your view</p>
+              <h2>Choose a place and period.</h2>
+              <p class="lead">Pick a city, click the map or type coordinates, then choose the dates. Days are Indian days (IST).</p>
+            </div>
+            <div class="bar">
+              <label>Quick pick<select id="preset"><option value="">Custom point</option></select></label>
+              <div class="pair">
+                <label>Latitude<input id="latitude" type="number" step="0.00001" min="6" max="37.6" placeholder="e.g. 17.38500" inputmode="decimal"></label>
+                <label>Longitude<input id="longitude" type="number" step="0.00001" min="68" max="97.6" placeholder="e.g. 78.48670" inputmode="decimal"></label>
+              </div>
+              <div class="pair">
+                <label>From<input type="date" id="from"></label>
+                <label>To<input type="date" id="to"></label>
+              </div>
+              <label>Group by<select id="per"><option>Daily</option><option>Weekly</option><option>Monthly</option></select></label>
+              <div class="range-row" role="group" aria-label="Quick date ranges"><span>Quick range:</span><button type="button" data-days="7">7 days</button><button type="button" data-days="30">30 days</button><button type="button" data-days="90">90 days</button><button type="button" data-days="365">1 year</button></div>
+              <button class="btn" id="run" type="button"><i data-lucide="chart-line"></i>Show history</button>
+            </div>
+          </div>
+          <div id="map" class="pred-map" aria-label="Map of India: click to load history for a point"></div>
+        </div>
+        <div id="out" aria-live="polite"><div class="card state">Loading history…</div></div>
+      </div>
+    </section>
+  </main>
+  <div id="foot"></div>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/account.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/analytics.js"></script>
+</body>
+</html>

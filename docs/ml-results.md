@@ -1,6 +1,6 @@
 # ML results
 
-Generated from `models/metrics.json` by `python -m ml.report` (training run 2026-10-07T06:31:15.519322+00:00).
+Generated from `models/xgboost/metrics.json` by `python -m ml.report` (training run 2026-10-07T06:31:15.519322+00:00).
 
 All numbers are measured on real data (CAMS + archived NWP forecasts, 38 Indian locations). Targets: **surface ozone (µg/m³)** and **all-sky UV index**, both from CAMS (model-derived truth — see scientific-limitations.md).
 

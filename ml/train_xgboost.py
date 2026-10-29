@@ -1,6 +1,10 @@
 """Benchmark, select, calibrate and save the OzoneGuard forecasting models.
 
-python -m ml.train            # full benchmark + artifacts (~CPU minutes)
+python -m ml.train_xgboost    # full benchmark + artifacts (~CPU minutes)
+
+Artifacts go to models/xgboost/ (the shared climatology to models/climatology.parquet).
+The LSTM alternative is trained separately by ml/train_lstm.py; compare both with
+`python -m ml.compare_models`.
 
 Steps
 1. Baselines: persistence, same-hour-previous-day, train climatology, raw NWP UV.
@@ -11,7 +15,7 @@ Steps
 5. Split-conformal (Mondrian) 90 % intervals calibrated on validation.
 6. ONE evaluation on the untouched test period + spatial-holdout locations.
 7. Explainability: gain, permutation importance, SHAP (TreeSHAP via LightGBM).
-8. Save models/*.joblib, metadata, feature schema, metrics, climatology.
+8. Save models/xgboost/*.json + *.joblib, metadata, feature schema, metrics, climatology.
 """
 from __future__ import annotations
 
@@ -387,12 +391,12 @@ def run() -> dict:
 
 
 def save_artifacts(final_models, results, clim, tr, va, te) -> None:
-    config.MODELS.mkdir(parents=True, exist_ok=True)
+    config.MODELS_XGBOOST.mkdir(parents=True, exist_ok=True)
     for target in ["ozone", "uv"]:
         fm = final_models[target]
-        joblib.dump(fm["model"], config.MODELS / f"{target}_model.joblib", compress=3)
+        joblib.dump(fm["model"], config.MODELS_XGBOOST / f"{target}_model.joblib", compress=3)
         # Portable copy for serving: the pickle above may not open on another OS / Python.
-        native = config.MODELS / f"{target}_model.json"
+        native = config.MODELS_XGBOOST / f"{target}_model.json"
         if fm["family"] == "XGBoost" and hasattr(fm["model"], "save_model"):
             fm["model"].save_model(native)
         else:
@@ -404,9 +408,9 @@ def save_artifacts(final_models, results, clim, tr, va, te) -> None:
     schema["uv"]["uses_predicted_ozone"] = bool(final_models["uv"].get("uses_predicted_ozone"))
     schema["horizons"] = config.HORIZONS
     schema["available_at_prediction_time"] = "all features; see docs/data-leakage-audit.md"
-    (config.MODELS / "feature_schema.json").write_text(json.dumps(schema, indent=2))
+    (config.MODELS_XGBOOST / "feature_schema.json").write_text(json.dumps(schema, indent=2))
     conf = {t: final_models[t]["conformal"] for t in ["ozone", "uv"]}
-    (config.MODELS / "conformal.json").write_text(json.dumps(conf, indent=2))
+    (config.MODELS_XGBOOST / "conformal.json").write_text(json.dumps(conf, indent=2))
     meta = {
         "model_version": config.MODEL_VERSION,
         "dataset_version": config.DATASET_VERSION,
@@ -429,8 +433,8 @@ def save_artifacts(final_models, results, clim, tr, va, te) -> None:
             "Solar geometry: NOAA solar position equations (computed)",
         ],
     }
-    (config.MODELS / "model_metadata.json").write_text(json.dumps(meta, indent=2, default=str))
-    (config.MODELS / "metrics.json").write_text(json.dumps(results, indent=2, default=str))
+    (config.MODELS_XGBOOST / "model_metadata.json").write_text(json.dumps(meta, indent=2, default=str))
+    (config.MODELS_XGBOOST / "metrics.json").write_text(json.dumps(results, indent=2, default=str))
 
 
 def _params(model) -> dict:
@@ -443,17 +447,17 @@ def _params(model) -> dict:
 
 def explain_only() -> None:
     """Recompute the explainability block for the saved models (no retraining)."""
-    M = json.loads((config.MODELS / "metrics.json").read_text())
-    schema = json.loads((config.MODELS / "feature_schema.json").read_text())
+    M = json.loads((config.MODELS_XGBOOST / "metrics.json").read_text())
+    schema = json.loads((config.MODELS_XGBOOST / "feature_schema.json").read_text())
     va = pd.read_parquet(config.PROCESSED / "val.parquet").dropna(subset=["y_ozone", "y_uv"]).reset_index(drop=True)
-    oz = joblib.load(config.MODELS / "ozone_model.joblib")
+    oz = joblib.load(config.MODELS_XGBOOST / "ozone_model.joblib")
     va["pred_ozone"] = postprocess("ozone", oz.predict(va[schema["ozone"]["features"]]), va)
     M["explainability_validation"] = {}
     for t in ["ozone", "uv"]:
         feats = schema[t]["features"]
-        model = joblib.load(config.MODELS / f"{t}_model.joblib")
+        model = joblib.load(config.MODELS_XGBOOST / f"{t}_model.joblib")
         M["explainability_validation"][t] = explain(model, va[feats], va[f"y_{t}"].to_numpy(), t, feats)
-    (config.MODELS / "metrics.json").write_text(json.dumps(M, indent=2, default=str))
+    (config.MODELS_XGBOOST / "metrics.json").write_text(json.dumps(M, indent=2, default=str))
     print("explainability updated")
 
 

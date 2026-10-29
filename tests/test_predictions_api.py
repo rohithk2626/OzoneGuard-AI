@@ -19,7 +19,9 @@ from ml import config
 
 client = TestClient(app)
 SAMPLE = Path(config.SAMPLES) / "hyderabad_frame_2026-09-28_to_10-02.parquet"
-MODELS_READY = (config.MODELS / "uv_model.joblib").exists() and (config.MODELS / "ozone_model.joblib").exists()
+# The backend loads XGBoost's portable .json file and falls back to .joblib, so either one counts.
+MODELS_READY = all((config.MODELS_XGBOOST / f"{t}_model.json").exists() or (config.MODELS_XGBOOST / f"{t}_model.joblib").exists()
+                   for t in ("uv", "ozone"))
 NOW = datetime(2026, 10, 1, 3, 20, tzinfo=timezone.utc)   # 08:50 IST
 CELL = {"cams_cell": [17.4, 78.5], "nwp_cell": [17.39, 78.46], "elevation_m": 500.0}
 
@@ -40,7 +42,7 @@ def test_invalid_coordinates_rejected():
 def test_provider_unavailable_returns_503(monkeypatch):
     if not MODELS_READY:
         pytest.skip("models not trained")
-    def boom(lat, lon):
+    def boom(lat, lon, **kw):
         raise ps.PredictionUnavailable("Open-Meteo down", "provider_unavailable")
     monkeypatch.setattr(ps, "fetch_live_frame", boom)
     ps._cache.clear()
@@ -52,7 +54,7 @@ def test_provider_unavailable_returns_503(monkeypatch):
 def test_missing_models_returns_503(monkeypatch):
     def missing():
         raise ps.PredictionUnavailable("Model artifacts not found", "model_not_trained")
-    monkeypatch.setattr("backend.api.routes.predictions.predict_24h", lambda lat, lon: missing())
+    monkeypatch.setattr("backend.api.routes.predictions.predict_24h", lambda lat, lon, **kw: missing())
     r = client.get("/api/v1/predictions/24h?lat=21.0&lon=79.0")
     assert r.status_code == 503 and r.json()["detail"]["status"] == "model_not_trained"
 
@@ -105,9 +107,9 @@ def test_missing_weather_forecast_refuses(monkeypatch):
 
 @pytest.mark.skipif(not MODELS_READY, reason="models not trained")
 def test_route_end_to_end_with_replayed_frame(monkeypatch):
-    monkeypatch.setattr(ps, "fetch_live_frame", lambda lat, lon: (_frame(), CELL))
+    monkeypatch.setattr(ps, "fetch_live_frame", lambda lat, lon, **kw: (_frame(), CELL))
     real = ps.predict_24h
-    monkeypatch.setattr("backend.api.routes.predictions.predict_24h", lambda lat, lon: real(lat, lon, now=NOW))
+    monkeypatch.setattr("backend.api.routes.predictions.predict_24h", lambda lat, lon, **kw: real(lat, lon, now=NOW, **kw))
     ps._cache.clear()
     r = client.get("/api/v1/predictions/24h?lat=17.385&lon=78.4867")
     assert r.status_code == 200
@@ -126,7 +128,7 @@ def test_model_info_is_json_safe():
     assert body["test"]["ozone"]["mae"] > 0 and body["test"]["uv"]["mae"] > 0
 
 
-@pytest.mark.skipif(not (config.MODELS / "ozone_model.json").exists(), reason="portable model files not present")
+@pytest.mark.skipif(not (config.MODELS_XGBOOST / "ozone_model.json").exists(), reason="portable model files not present")
 def test_models_load_without_pickle(monkeypatch):
     """Serving must work from the portable XGBoost JSON files even where the .joblib
     pickles cannot be opened (seen on Windows: 'XGBoostError: input stream corrupted')."""

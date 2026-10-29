@@ -9,20 +9,21 @@ The backend is versioned under `/api/v1`. Interactive docs: `http://127.0.0.1:80
 | GET | `/api/v1/location/presets` | the 38 named model locations (quick picks) | — |
 | GET | `/api/v1/location/overview?lat=&lon=` | current weather, UV, NASA total-column ozone, place name | NOW |
 | GET | `/api/v1/ozone/current?lat=&lon=` | NASA OMTO3G total-column ozone (DU) | NOW |
-| GET | `/api/v1/predictions/24h?lat=&lon=` | 24-hour surface-ozone + UV forecast | FUTURE |
-| GET | `/api/v1/predictions/model-info` | model metadata and headline metrics | FUTURE |
+| GET | `/api/v1/predictions/24h?lat=&lon=&model=` | 24-hour surface-ozone + UV forecast | FUTURE |
+| GET | `/api/v1/predictions/model-info?model=` | model metadata and headline metrics | FUTURE |
+| GET | `/api/v1/predictions/models` | both model families: availability, default, test metrics | FUTURE |
 | GET | `/api/v1/analytics/history?lat=&lon=&start=&end=` | real daily ozone / UV / weather history | PAST |
 | GET | `/api/v1/analytics/limits` | earliest day, today (IST), longest range | PAST |
 
 ## `GET /api/v1/predictions/24h`
 
-**Inputs:** `lat` (−90…90), `lon` (−180…180); must be inside India's outline (`backend/data/india_boundary.json`; sea and neighbouring countries are rejected).
+**Inputs:** `lat` (−90…90), `lon` (−180…180); must be inside India's outline (`backend/data/india_boundary.json`; sea and neighbouring countries are rejected). Optional `model` = `xgboost` | `lstm`; when omitted the server default is used (`OZONEGUARD_MODEL` in `.env`, otherwise `xgboost`).
 
 **Responses**
 
 * `200` — forecast (schema `PredictionResponse`, `backend/schemas/predictions.py`)
 * `400` — outside India
-* `422` — not a valid number
+* `422` — not a valid number, or `model` is not `xgboost` / `lstm`
 * `503` — `{"detail": {"status": "provider_unavailable" | "model_not_trained" | "unavailable", "message": "…"}}`. No values are invented.
 
 **Main fields**
@@ -37,7 +38,7 @@ The backend is versioned under `/api/v1`. Interactive docs: `http://127.0.0.1:80
 | `targets` | what each number represents (units, truth source) |
 | `uncertainty` | method and meaning of the ranges |
 | `prediction_quality` | `tier` (high / medium / low), distance to nearest training point, measured errors |
-| `model` | version, algorithms, whether UV uses predicted ozone |
+| `model` | `name` (`xgboost` / `lstm`), version, algorithms, whether UV uses predicted ozone |
 | `data_status` | live sources, notes, anomaly availability |
 | `reference_cams_raw_forecast` | CAMS' own raw forecast for the same hours (reference only; not evaluated) |
 

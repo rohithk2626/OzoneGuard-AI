@@ -126,7 +126,7 @@ def test_qc_duplicates_gaps_limits():
 
 
 def test_climatology_uses_training_period_only():
-    from ml.train import build_climatology
+    from ml.train_xgboost import build_climatology
     f = _raw()
     f["time_utc"] = pd.date_range("2024-09-30T00:00Z", periods=48, freq="h")  # spans TRAIN_END
     f.loc[f["time_utc"] > pd.Timestamp(config.TRAIN_END), "cams_ozone"] = 10_000.0

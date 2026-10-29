@@ -1,3 +1,44 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Create account · OzoneGuard AI</title><link rel="stylesheet" href="css/style.css"></head><body><div id="nav"></div><main><form class="card form" data-mode="register" novalidate><span class="eyebrow">Get started</span><h2>Create your account.</h2><p class="form-intro">Create an account to keep your saved locations on any device.</p><div class="f"><input name="name" placeholder="Full name" aria-label="Full name" autocomplete="name"><div class="e" data-f="name"></div></div><div class="f"><input name="email" type="email" placeholder="Email address" aria-label="Email address" autocomplete="email"><div class="e" data-f="email"></div></div><div class="f"><input name="password" type="password" placeholder="Password (at least 8 characters)" aria-label="Password (at least 8 characters)" autocomplete="new-password"><div class="e" data-f="password"></div></div><div class="f"><input name="confirm" type="password" placeholder="Confirm password" aria-label="Confirm password" autocomplete="new-password"><div class="e" data-f="confirm"></div></div>
-<p style="margin:20px 0 14px"><button class="btn" type="submit">Create account</button></p><div class="form-links"><a href="login.html">Already registered? Sign in</a></div><div class="msg"></div></form>
-</main><div id="foot"></div><script src="https://unpkg.com/lucide@latest"></script><script src="js/firebase-config.js"></script><script src="js/api.js"></script><script src="js/account.js"></script><script src="js/main.js"></script><script src="js/auth.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Create account · OzoneGuard AI</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="nav"></div>
+  <main>
+    <div class="wrap auth">
+      <div class="auth-aside">
+        <p class="eyebrow">Get started</p>
+        <h1>Create your account.</h1>
+        <p>Create an account to keep your saved locations on any device.</p>
+        <ul>
+          <li><i data-lucide="bookmark"></i>Save up to 20 places in India and open any of them in one click.</li>
+          <li><i data-lucide="layout-dashboard"></i>Your dashboard shows each place now, next and over the last two weeks.</li>
+          <li><i data-lucide="lock-keyhole"></i>Passwords go straight to Firebase; the OzoneGuard server never sees them.</li>
+        </ul>
+      </div>
+      <form class="card form" data-mode="register" novalidate>
+        <h2>Create account</h2>
+        <p class="form-intro">All fields are required.</p>
+        <div class="f"><label for="name"><span>Full name</span></label><input id="name" name="name" autocomplete="name"><div class="e" data-f="name"></div></div>
+        <div class="f"><label for="email"><span>Email address</span></label><input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email"><div class="e" data-f="email"></div></div>
+        <div class="f"><label for="password"><span>Password</span></label><input id="password" name="password" type="password" placeholder="At least 8 characters" autocomplete="new-password"><div class="e" data-f="password"></div></div>
+        <div class="f"><label for="confirm"><span>Confirm password</span></label><input id="confirm" name="confirm" type="password" autocomplete="new-password"><div class="e" data-f="confirm"></div></div>
+        <p style="margin:20px 0 16px"><button class="btn" type="submit">Create account</button></p>
+        <div class="form-links"><a href="login.html">Already registered? Sign in</a></div>
+        <div class="msg" role="status"></div>
+      </form>
+    </div>
+  </main>
+  <div id="foot"></div>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/account.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

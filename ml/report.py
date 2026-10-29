@@ -1,4 +1,4 @@
-"""Generate docs/ml-results.md (+ figures) directly from models/metrics.json.
+"""Generate docs/ml-results.md (+ figures) directly from models/xgboost/metrics.json.
 
 Numbers are never typed by hand: re-running training and this script
 regenerates the report.
@@ -58,10 +58,10 @@ def figures(M: dict) -> list[str]:
 
 
 def main() -> None:
-    M = json.loads((config.MODELS / "metrics.json").read_text())
-    meta = json.loads((config.MODELS / "model_metadata.json").read_text())
+    M = json.loads((config.MODELS_XGBOOST / "metrics.json").read_text())
+    meta = json.loads((config.MODELS_XGBOOST / "model_metadata.json").read_text())
     figs = figures(M)
-    L = ["# ML results", "", f"Generated from `models/metrics.json` by `python -m ml.report` (training run {M['generated_at']}).", "",
+    L = ["# ML results", "", f"Generated from `models/xgboost/metrics.json` by `python -m ml.report` (training run {M['generated_at']}).", "",
          "All numbers are measured on real data (CAMS + archived NWP forecasts, 38 Indian locations). "
          "Targets: **surface ozone (µg/m³)** and **all-sky UV index**, both from CAMS (model-derived truth — see scientific-limitations.md).", "",
          "## Data and splits", "",

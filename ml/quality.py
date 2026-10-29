@@ -1,7 +1,7 @@
 """Prediction-quality indicator for arbitrary coordinates.
 
 Evidence base: models are trained on 30 points; 8 further points were held
-out entirely (ml/train.py -> metrics.json["prediction_quality_evidence"]).
+out entirely (ml/train_xgboost.py -> metrics.json["prediction_quality_evidence"]).
 The indicator is a transparent, rule-based tier, NOT a probability:
 
 * "high"   -- within 50 km of a training point (same/adjacent CAMS 0.4° cell):

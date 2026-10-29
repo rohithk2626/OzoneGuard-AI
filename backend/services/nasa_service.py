@@ -19,6 +19,7 @@ import requests
 import earthaccess
 
 from backend.core.config import settings
+from backend.core.errors import describe_failure
 
 NASA_DATASET = settings.nasa_short_name
 NASA_DATASET_TITLE = "OMI/Aura Ozone (O3) Total Column Daily L2 Global Gridded 0.25 degree"
@@ -307,7 +308,7 @@ def get_current_ozone(lat: float, lon: float) -> dict[str, Any]:
     except Exception as exc:
         result.update({
             "status": "unavailable",
-            "message": str(exc),
+            "message": describe_failure(exc),
             "retrieved_at": datetime.now(timezone.utc).isoformat(),
         })
         return result

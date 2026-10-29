@@ -11,7 +11,7 @@ Every training value can be traced back to one API request.
 | 2. Raw per location | `data/raw/openmeteo/<location>.parquet` | `python -m ml.collect_data import-export …` (or `fetch`) | parsed to typed columns; timestamps → UTC-aware |
 | 3. Clean | `data/intermediate/cleaned.parquet` + `quality_report.json` | `python -m ml.preprocess` | duplicates removed, hourly grid completed, values outside physical limits → NaN, `solar_elevation` and `cams_native` added |
 | 4. Model tables | `data/processed/{train,val,test,spatial_holdout}.parquet` | `python -m ml.features` | direct multi-horizon rows (issue time, lead, features, targets, split) |
-| 5. Artifacts | `models/*` | `python -m ml.train` | trained models, conformal tables, metrics, climatology |
+| 5. Artifacts | `models/xgboost/*`, `models/lstm/*` | `python -m ml.train_xgboost`, `python -m ml.train_lstm` | trained models, conformal tables, metrics, climatology |
 
 ## Request definitions (exactly what was requested)
 
@@ -40,4 +40,4 @@ Every training value can be traced back to one API request.
 ## Version identifiers
 
 * Dataset version: `og-cams-ifs-2022.08-2026.10-v1` (`ml/config.py`)
-* Model version: `1.0.0` (`models/model_metadata.json`)
+* Model version: `1.0.0` (`models/xgboost/model_metadata.json`)

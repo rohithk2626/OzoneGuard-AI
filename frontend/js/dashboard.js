@@ -2,7 +2,7 @@
  * for the selected place, plus saved locations. Everything comes from the backend or
  * from the user's own saved list; nothing is generated in the browser. */
 (() => {
-  const C = { one: '#0e9384' };
+  const C = { one: '#b8620b' };   // sun amber: the UV series colour used across the site
   const todayIST = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
   const shift = (s, days) => { const d = new Date(s + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + days); return d.toISOString().slice(0, 10); };
   const short = s => new Date(s + 'T00:00:00Z').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'UTC' });
@@ -14,7 +14,7 @@
   /* ---------------------------------------------------------------- NOW */
   async function loadNow() {
     const box = $('#sum');
-    box.innerHTML = '<div class="card"><p>Loading live conditions…</p></div>';
+    box.innerHTML = '<div class="card state">Loading live conditions…</div>';
     try {
       const d = await API.getLocationOverview(place.lat, place.lon), w = d.weather || {}, o = d.ozone || {}, p = d.location.place || {};
       const name = p.city || p.district || p.state;
@@ -22,7 +22,7 @@
       const live = w.status !== 'unavailable', uv = live ? w.uv_index : null;
       const cat = uv === null || uv === undefined ? null : uvCat(uv);
       box.innerHTML = `
-        <div class="card kpi peak" style="--c:${cat ? cat.color : '#87939a'}"><div class="l">UV index now</div><div class="v">${fmtNum(uv, 1)}</div><div class="s">${cat ? riskBadge(cat.label) + ' ' + escHtml(cat.tip) : 'UV is unavailable right now.'}</div></div>
+        <div class="card kpi peak" style="--c:${cat ? cat.color : '#87939a'}"><div class="l">UV index now</div><div class="v">${fmtNum(uv, 1)}</div><div class="s">${cat ? riskBadge(cat.label) + ' ' + escHtml(cat.tip) : 'UV is unavailable right now.'}</div>${cat ? uvScale(uv) : ''}</div>
         <div class="card kpi"><div class="l">Weather now</div><div class="v">${fmtNum(w.temperature, 1)}<small>°C</small></div><div class="s">${live ? `feels like ${fmtNum(w.feels_like, 1)} °C · humidity ${fmtNum(w.humidity, 0)}% · cloud ${fmtNum(w.cloud_cover, 0)}% · wind ${fmtNum(w.wind_speed, 1)} km/h` : 'The weather provider did not respond.'}</div></div>
         <div class="card kpi"><div class="l">Ozone layer (total column)</div><div class="v">${fmtNum(o.value, 0)}<small>DU</small></div><div class="s">${o.status === 'live' ? 'NASA OMI satellite pass of ' + escHtml(passDate(o.observation_time)) : o.status === 'stale' ? 'From ' + escHtml(passDate(o.observation_time)) + '. ' + escHtml(o.message || '') : o.status === 'requires_earthdata_auth' ? 'Needs a NASA Earthdata token on the backend (docs/blockers.md).' : escHtml(o.message || 'Unavailable right now.')}</div></div>`;
     } catch (e) { box.innerHTML = `<div class="note" role="alert"><strong>Live conditions unavailable.</strong><br>${escHtml(e.message)}</div>`; }
@@ -39,7 +39,7 @@
         ds('90% range', P.map(p => p.uv.lower), C.one, { borderWidth: 0, pointRadius: 0, fill: '-1', backgroundColor: C.one + '2e' }),
         ds('Forecast UV index', P.map(p => p.uv.value), C.one, { fill: false, pointRadius: P.map((_, i) => (i === peak ? 6 : 0)) })], 'UV index',
         { x: 'Time (IST)', o: { plugins: { legend: { labels: { filter: it => it.text !== 'Upper range', boxWidth: 14, boxHeight: 3 } },
-          subtitle: { display: true, align: 'start', color: '#657982', padding: { bottom: 8 }, text: `Peak ${fmtNum(r.peak_uv.value, 1)} (${r.peak_uv.risk}) at ${istTime(r.peak_uv.time_ist)}` } } } });
+          subtitle: { display: true, align: 'start', color: '#5c6283', padding: { bottom: 8 }, text: `Peak ${fmtNum(r.peak_uv.value, 1)} (${r.peak_uv.risk}) at ${istTime(r.peak_uv.time_ist)}` } } } });
     } catch (e) { boxMsg('f-box', 'Forecast unavailable: ' + e.message, 1); }
   }
 
@@ -61,7 +61,7 @@
     const box = $('#saved'), user = OGAccount.user;
     $('#saved-where').innerHTML = user
       ? `Signed in as <b>${escHtml(user.displayName || user.email)}</b>. These are stored in your account.`
-      : `Stored in this browser only. <a href="login.html" style="color:var(--teal);font-weight:700">Sign in</a> to keep them on every device${OGAccount.configured ? '' : ' (accounts are not set up yet)'}.`;
+      : `Stored in this browser only. <a href="login.html">Sign in</a> to keep them on every device${OGAccount.configured ? '' : ' (accounts are not set up yet)'}.`;
     if (!saved.length) return (box.innerHTML = '<div class="state">No saved locations yet. Use "Save this location" above, or on the Location page.</div>');
     box.innerHTML = `<ul class="saved-list">${saved.map(s => `
       <li data-id="${escHtml(s.id)}" class="${place && Math.abs(s.lat - place.lat) < 0.0005 && Math.abs(s.lon - place.lon) < 0.0005 ? 'current' : ''}">
@@ -121,7 +121,7 @@
   function empty() {
     $('#loc').textContent = 'no place yet';
     $('#save-place').style.display = 'none';
-    $('#sum').innerHTML = '<div class="card"><p>Choose a place on the <a href="locations.html" style="color:var(--teal);font-weight:700">Location page</a> (or open one of your saved locations below) to see its live conditions here.</p></div>';
+    $('#sum').innerHTML = '<div class="card"><p>Choose a place on the <a href="locations.html">Location page</a> (or open one of your saved locations below) to see its live conditions here.</p></div>';
     boxMsg('f-box', 'Pick a place to see its 24-hour forecast.'); boxMsg('h-box', 'Pick a place to see its recent history.');
   }
 

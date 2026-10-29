@@ -1,0 +1,137 @@
+{
+  "model_version": "1.0.0-lstm",
+  "dataset_version": "og-cams-ifs-2022.08-2026.10-v1",
+  "trained_at": "2026-10-26T17:37:34.715142+00:00",
+  "forecast_formulation": "encoder-decoder LSTM: 48 h history -> 24 hourly outputs in one pass",
+  "training_period_issue_time_utc": [
+    null,
+    "2024-09-30T23:00:00Z"
+  ],
+  "validation_period_issue_time_utc": [
+    "2024-09-30T23:00:00Z",
+    "2025-09-30T23:00:00Z"
+  ],
+  "test_period_issue_time_utc": [
+    "2025-09-30T23:00:00Z",
+    null
+  ],
+  "training_locations": [
+    "delhi",
+    "chandigarh",
+    "lucknow",
+    "srinagar",
+    "dehradun",
+    "leh",
+    "jaipur",
+    "ahmedabad",
+    "mumbai",
+    "pune",
+    "bhuj",
+    "bhopal",
+    "nagpur",
+    "raipur",
+    "jabalpur",
+    "kolkata",
+    "patna",
+    "bhubaneswar",
+    "varanasi",
+    "guwahati",
+    "shillong",
+    "agartala",
+    "itanagar",
+    "hyderabad",
+    "chennai",
+    "bengaluru",
+    "thiruvananthapuram",
+    "kochi",
+    "visakhapatnam",
+    "mangaluru"
+  ],
+  "spatial_holdout_locations": [
+    "amritsar",
+    "jodhpur",
+    "panaji",
+    "indore",
+    "ranchi",
+    "imphal",
+    "madurai",
+    "kurnool"
+  ],
+  "models": {
+    "ozone": {
+      "algorithm": "LSTM",
+      "hyperparameters": {
+        "hidden_size": 96,
+        "num_layers": 2,
+        "dropout": 0.1,
+        "lr": 0.002,
+        "batch_size": 256,
+        "max_epochs": 25,
+        "epochs_run": 7,
+        "early_stopping_patience": 4,
+        "train_issue_stride_h": 2,
+        "encoder_hours": 48,
+        "decoder_hours": 24,
+        "loss": "L1 on standardised targets",
+        "parameters": 245186
+      },
+      "target": "cams_ozone",
+      "n_features": 54
+    },
+    "uv": {
+      "algorithm": "LSTM",
+      "hyperparameters": {
+        "hidden_size": 96,
+        "num_layers": 2,
+        "dropout": 0.1,
+        "lr": 0.002,
+        "batch_size": 256,
+        "max_epochs": 25,
+        "epochs_run": 7,
+        "early_stopping_patience": 4,
+        "train_issue_stride_h": 2,
+        "encoder_hours": 48,
+        "decoder_hours": 24,
+        "loss": "L1 on standardised targets",
+        "parameters": 245186
+      },
+      "target": "cams_uv_index",
+      "n_features": 54
+    }
+  },
+  "uncertainty": "split-conformal (Mondrian by lead bucket \u00d7 predicted-value bin), 90 % nominal, calibrated on validation period",
+  "validation_metrics": {
+    "ozone": {
+      "n": 1048320,
+      "mae": 10.37980717864156,
+      "rmse": 14.620171316472078,
+      "r2": 0.8968247518604721
+    },
+    "uv": {
+      "n": 1048320,
+      "mae": 0.21015954425740388,
+      "rmse": 0.5432942023619548,
+      "r2": 0.9526183798538559
+    }
+  },
+  "test_metrics": {
+    "ozone": {
+      "n": 1062720,
+      "mae": 10.275838825470064,
+      "rmse": 14.378875916935343,
+      "r2": 0.8985621954945232
+    },
+    "uv": {
+      "n": 1062720,
+      "mae": 0.19410717052660795,
+      "rmse": 0.49464898570704996,
+      "r2": 0.9627478570149206
+    }
+  },
+  "serving": "NumPy forward pass from lstm_weights.npz (PyTorch not required at inference)",
+  "data_sources": [
+    "CAMS global atmospheric composition forecasts (ECMWF/Copernicus) via Open-Meteo Air Quality API (CC BY 4.0)",
+    "Archived NWP forecasts via Open-Meteo Historical Forecast API, best_match (CC BY 4.0)",
+    "Solar geometry: NOAA solar position equations (computed)"
+  ]
+}
