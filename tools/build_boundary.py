@@ -6,7 +6,7 @@ Survey of India boundary. Steps: buffer outward by BUFFER_DEG so coastal and bor
 towns are not rejected by simplification or by the ~45 km CAMS grid, then simplify.
 """
 import json, sys
-from shapely.geometry import shape, Point
+from shapely.geometry import shape
 from shapely.ops import unary_union
 
 BUFFER_DEG, SIMPLIFY_DEG = 0.2, 0.04

@@ -5,7 +5,7 @@ import pytest
 from ml import config
 from ml.features import (OZONE_FEATURES, UV_FEATURES_NO_OZONE, assign_split, build_rows)
 from ml.preprocess import clean
-from ml.risk import uv_risk_index, uv_risk_label
+from ml.risk import uv_risk_label
 from ml.solar import solar_position
 from tests._synthetic import synthetic_frame
 

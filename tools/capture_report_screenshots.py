@@ -1,6 +1,6 @@
 """Capture website screenshots + XGBoost-vs-LSTM chart for the project report.
 Run by tools/capture_report_screenshots.bat (server must be on http://127.0.0.1:8765)."""
-import json, sys, time, traceback
+import json, time, traceback
 from pathlib import Path
 import requests
 

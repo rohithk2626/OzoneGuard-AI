@@ -13,7 +13,7 @@ def _origins() -> list[str]:
 
 @dataclass(frozen=True)
 class Settings:
-    app_version: str = os.getenv("APP_VERSION", "0.2.0")
+    app_version: str = os.getenv("APP_VERSION", "1.0.0")
     cors_origins: list[str] = None  # type: ignore[assignment]
     nasa_earthdata_token: str = os.getenv("NASA_EARTHDATA_TOKEN", "").strip()
     nasa_cmr_url: str = os.getenv("NASA_CMR_URL", "https://cmr.earthdata.nasa.gov/search/granules.umm_json")

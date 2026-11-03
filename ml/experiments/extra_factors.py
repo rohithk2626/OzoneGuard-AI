@@ -9,7 +9,6 @@ the period where archived BLH forecasts exist), with the production XGBoost sett
 on the production test year (Oct 2025 - Oct 2026) for the 30 training cities and the 8 unseen cities.
 """
 import json, sys, time
-import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parents[2]))
