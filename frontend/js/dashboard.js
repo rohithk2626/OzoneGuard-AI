@@ -115,6 +115,7 @@
 
   /* ---------------------------------------------------------------- page */
   function heading() {
+    $('#loc-head').innerHTML = 'Conditions for <span id="loc"></span>';
     $('#loc').textContent = placeLabel(place);
     $('#loc-sub').textContent = place ? coordText(place.lat, place.lon) : '';
   }
@@ -126,7 +127,7 @@
   }
 
   function empty() {
-    $('#loc').textContent = 'no place yet';
+    $('#loc-head').textContent = 'No place chosen yet';
     $('#save-place').style.display = 'none';
     $('#sum').innerHTML = '<div class="card"><p>Choose a place on the <a href="locations.html">Location page</a> (or open one of your saved locations below) to see its live conditions here.</p></div>';
     boxMsg('f-box', 'Pick a place to see its 24-hour forecast.'); boxMsg('h-box', 'Pick a place to see its recent history.');
