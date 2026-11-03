@@ -12,8 +12,8 @@
  * in this browser only and the login page explains that accounts are not set up.
  */
 window.OG_FIREBASE_CONFIG = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "your-project-id.firebaseapp.com",
-  projectId: "your-project-id",
-  appId: "1:000000000000:web:0000000000000000000000"
+  apiKey: "AIzaSyCtsjnJmqZBlettoxAgCLJf84xFWclacwk",
+  authDomain: "ozoneguard-ai-b8fa3.firebaseapp.com",
+  projectId: "ozoneguard-ai-b8fa3",
+  appId: "1:511918077849:web:0423dc9e7d589aad694508"
 };
