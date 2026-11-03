@@ -14,6 +14,7 @@ class Interval(BaseModel):
 
 class OzoneHour(Interval):
     anomaly: Optional[dict[str, Optional[float]]] = None
+    station_equivalent: Optional[float] = None   # forecast × station scale; absent if no scale is fitted
 
 
 class UVHour(Interval):
@@ -65,3 +66,4 @@ class PredictionResponse(BaseModel):
     model: dict[str, Any]
     data_status: dict[str, Any]
     reference_cams_raw_forecast: list[dict[str, Any]]
+    station_scale: Optional[dict[str, Any]] = None

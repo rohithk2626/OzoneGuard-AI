@@ -142,3 +142,40 @@ def test_models_load_without_pickle(monkeypatch):
         assert out["model"]["ozone_algorithm"] == "XGBoost"
     finally:
         ps.load_artifacts.cache_clear()
+
+
+@pytest.mark.skipif(not MODELS_READY, reason="models not trained")
+def test_station_equivalent_ozone(monkeypatch, tmp_path):
+    """Station-equivalent ozone = forecast × the fitted factor, and it survives the API schema."""
+    scale = tmp_path / "station_scale.json"
+    scale.write_text('{"factor": 0.25, "fitted_on": {"stations": ["a", "b"], "matched_hours": 100},'
+                     ' "leave_one_station_out": {"mae_after": 12.0}}', encoding="utf-8")
+    monkeypatch.setattr(ps, "STATION_SCALE_PATH", scale)
+    out = ps.predict_24h(17.385, 78.4867, now=NOW, frame=_frame(), cell_meta=CELL)
+    for p in out["predictions"]:
+        assert p["ozone"]["station_equivalent"] == pytest.approx(p["ozone"]["value"] * 0.25, abs=0.06)
+    assert out["summary"]["max_ozone_station_equivalent"] == pytest.approx(out["summary"]["max_ozone"] * 0.25, abs=0.1)
+    assert out["station_scale"]["factor"] == 0.25 and out["station_scale"]["typical_error_vs_stations"] == 12.0
+    body = PredictionResponse.model_validate(out).model_dump()
+    assert body["station_scale"]["stations"] == 2
+    assert body["predictions"][0]["ozone"]["station_equivalent"] is not None
+
+
+@pytest.mark.skipif(not MODELS_READY, reason="models not trained")
+@pytest.mark.parametrize("content", [None, "not json", '{"factor": 0}', '{"factor": 40}'])
+def test_station_equivalent_absent_without_valid_scale(monkeypatch, tmp_path, content):
+    scale = tmp_path / "station_scale.json"
+    if content is not None:
+        scale.write_text(content, encoding="utf-8")
+    monkeypatch.setattr(ps, "STATION_SCALE_PATH", scale)
+    out = ps.predict_24h(17.385, 78.4867, now=NOW, frame=_frame(), cell_meta=CELL)
+    assert "station_scale" not in out and "max_ozone_station_equivalent" not in out["summary"]
+    assert all("station_equivalent" not in p["ozone"] for p in out["predictions"])
+    PredictionResponse.model_validate(out)
+
+
+def test_shipped_station_scale_is_sane():
+    s = ps.load_station_scale()
+    if s is None:
+        pytest.skip("models/station_scale.json not fitted")
+    assert 0.1 < s["factor"] < 1 and s["typical_error_vs_stations"] < 30

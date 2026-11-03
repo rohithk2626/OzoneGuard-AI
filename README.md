@@ -14,7 +14,7 @@
   <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white">
   <img alt="FastAPI" src="https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white">
   <img alt="Models: XGBoost and LSTM" src="https://img.shields.io/badge/models-XGBoost%20%7C%20LSTM-2e43b8">
-  <img alt="114 tests" src="https://img.shields.io/badge/tests-114%20passing-2e7d32">
+  <img alt="120 tests" src="https://img.shields.io/badge/tests-120%20passing-2e7d32">
   <img alt="Coverage: India" src="https://img.shields.io/badge/coverage-India-138808">
 </p>
 
@@ -117,6 +117,8 @@ The models learn to reproduce CAMS, the European atmospheric model, which works 
 - **Why.** A station measures one street, often next to traffic, whose exhaust destroys ozone locally; CAMS describes a 45 km square. The rest comes from the model's chemistry and emissions over India.
 
 So the forecasts are good for **when** ozone and UV are highest and for comparing places and days, but the ozone **numbers** are on the CAMS scale, several times what a nearby CPCB station would report. UV could not be checked this way: India has no public ground UV network.
+
+**Station-equivalent value.** To make the numbers easier to relate to, the Predictions page also shows each ozone forecast converted to what a typical CPCB city station would read: the forecast multiplied by **0.27**, the ratio of station to CAMS ozone over all 56,581 hours. Several ways of converting were compared by fitting on six stations and testing on the seventh, in turn; a single ratio did as well as the more complicated ones (a ratio per hour of day or per month, a straight-line fit, quantile mapping). On a station it had not seen, it cut the average error from **65 to 13 µg/m³**, with almost no overall bias. It is still an estimate from seven stations, so the page shows it with that ±13 µg/m³, and it applies only to ozone, not UV. The factor lives in `models/station_scale.json`; if that file is removed the page simply leaves the value out.
 
 Full results: [ground-truth report](docs/ground-truth-validation.md); more caveats on the [limitations page](docs/scientific-limitations.md).
 
@@ -268,13 +270,19 @@ python -m ml.validate_ground_truth csv data/external/stations
 python -m ml.validate_ground_truth openaq --start 2026-01-01 --end 2026-03-31
 ```
 
+To refit the station-equivalent factor from those station files and CAMS ozone for the same places and hours (columns `station`, `time_utc`, `cams_ozone`):
+
+```bash
+python -m ml.fit_station_scale data/external/stations data/validation/cams_ozone_at_stations_2025.csv   # -> models/station_scale.json
+```
+
 ## Running the tests
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The 114 tests cover data cleaning and features, both models, the India boundary, the API, the NASA reader, the station check and the error messages. They run offline, using the small sample in `data/samples/`.
+The 120 tests cover data cleaning and features, both models, the India boundary, the API, the NASA reader, the station check and the error messages. They run offline, using the small sample in `data/samples/`.
 
 ## Accounts (optional)
 

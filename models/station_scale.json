@@ -1,0 +1,90 @@
+{
+  "factor": 0.2685,
+  "method": "single multiplicative ratio: sum(station ozone) / sum(CAMS ozone) over all matched hours",
+  "fitted_on": {
+    "stations": [
+      "alandur bus depot chennai cpcb",
+      "bandra kurla complex mumbai mpcb",
+      "hebbal bengaluru kspcb",
+      "silk board bengaluru kspcb",
+      "sirifort delhi cpcb",
+      "somajiguda hyderabad tspcb",
+      "victoria kolkata wbpcb"
+    ],
+    "matched_hours": 56581,
+    "period_utc": [
+      "2024-12-31T18:00:00+00:00",
+      "2025-12-31T17:00:00+00:00"
+    ],
+    "station_mean": 23.3,
+    "cams_mean": 86.9
+  },
+  "per_station_ratio": {
+    "alandur bus depot chennai cpcb": 0.2973,
+    "bandra kurla complex mumbai mpcb": 0.2627,
+    "hebbal bengaluru kspcb": 0.1612,
+    "silk board bengaluru kspcb": 0.3073,
+    "sirifort delhi cpcb": 0.2872,
+    "somajiguda hyderabad tspcb": 0.2679,
+    "victoria kolkata wbpcb": 0.2891
+  },
+  "leave_one_station_out": {
+    "mae_before": 65.1,
+    "mae_after": 13.2,
+    "bias_after": -0.1,
+    "worst_station_mae_after": 21.3,
+    "per_station": {
+      "alandur bus depot chennai cpcb": {
+        "hours": 7424,
+        "mae_before": 67.5,
+        "mae_after": 21.3,
+        "bias_after": -2.9,
+        "factor_without_this_station": 0.2641
+      },
+      "bandra kurla complex mumbai mpcb": {
+        "hours": 8400,
+        "mae_before": 75.2,
+        "mae_after": 16.2,
+        "bias_after": 0.7,
+        "factor_without_this_station": 0.2697
+      },
+      "hebbal bengaluru kspcb": {
+        "hours": 8293,
+        "mae_before": 62.0,
+        "mae_after": 11.5,
+        "bias_after": 9.0,
+        "factor_without_this_station": 0.2837
+      },
+      "silk board bengaluru kspcb": {
+        "hours": 7684,
+        "mae_before": 51.1,
+        "mae_after": 10.9,
+        "bias_after": -3.2,
+        "factor_without_this_station": 0.2635
+      },
+      "sirifort delhi cpcb": {
+        "hours": 8689,
+        "mae_before": 68.8,
+        "mae_after": 13.3,
+        "bias_after": -2.0,
+        "factor_without_this_station": 0.2648
+      },
+      "somajiguda hyderabad tspcb": {
+        "hours": 7585,
+        "mae_before": 67.4,
+        "mae_after": 9.0,
+        "bias_after": 0.1,
+        "factor_without_this_station": 0.2685
+      },
+      "victoria kolkata wbpcb": {
+        "hours": 8506,
+        "mae_before": 63.9,
+        "mae_after": 10.1,
+        "bias_after": -2.2,
+        "factor_without_this_station": 0.2647
+      }
+    }
+  },
+  "meaning": "Approximate ozone a typical CPCB city monitoring station would report. Fitted on a few stations, so it is an estimate: compared with a station it was not fitted on it was off by about the 'mae_after' value on average. Applies to surface ozone only, not to UV.",
+  "created_at": "2026-11-03T08:50:15.522778+00:00"
+}

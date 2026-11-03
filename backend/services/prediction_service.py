@@ -117,6 +117,32 @@ def load_artifacts(model: str | None = None) -> dict[str, Any]:
     }
 
 
+# ------------------------------------------------------------------------- station-equivalent ozone
+STATION_SCALE_PATH = config.MODELS / "station_scale.json"
+
+
+def load_station_scale() -> dict | None:
+    """The CAMS-to-station factor written by `python -m ml.fit_station_scale`, or None if it was never fitted.
+    Read on every call (a few hundred bytes), so a refit takes effect without restarting the server."""
+    try:
+        s = json.loads(STATION_SCALE_PATH.read_text(encoding="utf-8"))
+        factor = float(s["factor"])
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+    if not 0 < factor < 5:
+        return None
+    lo = s.get("leave_one_station_out", {})
+    fitted = s.get("fitted_on", {})
+    return {"factor": factor,
+            "typical_error_vs_stations": lo.get("mae_after"),
+            "stations": len(fitted.get("stations", [])), "matched_hours": fitted.get("matched_hours"),
+            "explanation": ("Forecast ozone is on the CAMS scale, which over India reads several times higher than CPCB "
+                            f"monitoring stations. The station-equivalent value is forecast × {factor:g}, fitted on "
+                            f"{len(fitted.get('stations', []))} CPCB stations ({fitted.get('matched_hours', 0):,} hours); "
+                            f"against a station it was not fitted on it was off by about {lo.get('mae_after', '?')} µg/m³ "
+                            "on average. It applies to ozone only, not to UV.")}
+
+
 # ------------------------------------------------------------------------- live data
 def _fetch(url: str, params: dict) -> dict:
     r = requests.get(url, params=params, timeout=20)
@@ -350,6 +376,14 @@ def predict_24h(lat: float, lon: float, now: datetime | None = None, frame: pd.D
             for r in reference.head(24).itertuples()
         ],
     }
+    scale = load_station_scale()
+    if scale:
+        k = scale["factor"]
+        for h in hours:
+            h["ozone"]["station_equivalent"] = _r(h["ozone"]["value"] * k, 1) if h["ozone"]["value"] is not None else None
+        result["summary"]["max_ozone_station_equivalent"] = _r(float(oz_pred.max()) * k, 1)
+        result["summary"]["min_ozone_station_equivalent"] = _r(float(oz_pred.min()) * k, 1)
+        result["station_scale"] = scale
     with _lock:
         _cache[key] = (time.time(), result)
     return result

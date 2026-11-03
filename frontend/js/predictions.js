@@ -48,6 +48,7 @@ function render(d) {
   const ev = q.evidence || {};
   const evLine = q.tier === 'high' ? ev.test_mae_seen_locations : ev.test_mae_unseen_holdout_locations;
   const peakIdx = P.findIndex(p => p.time_utc === pk.time_utc);
+  const st = d.station_scale && d.summary.max_ozone_station_equivalent != null ? d.station_scale : null;
 
   $('#out').innerHTML = `
   <div class="pred-head"><div><span class="eyebrow">Forecast issued ${esc(istDay(d.issue_time_ist))}, ${esc(istTime(d.issue_time_ist))} IST</span>
@@ -57,7 +58,7 @@ function render(d) {
       <div class="s">${badge(pk.risk)} at ${esc(istTime(pk.time_ist))} · range ${num(pk.lower,1)}–${num(pk.upper,1)}</div>${uvScale(pk.value)}</div>
     <div class="card kpi"><div class="l">High-risk window (UV 6+)</div><div class="window-list">${win}</div>${winUpper}</div>
     <div class="card kpi"><div class="l">Surface ozone (max)</div><div class="v">${num(d.summary.max_ozone,0)}<small>µg/m³</small></div>
-      <div class="s">min ${num(d.summary.min_ozone,0)} µg/m³ over the next 24 h</div></div>
+      <div class="s">min ${num(d.summary.min_ozone,0)} µg/m³ over the next 24 h</div>${st ? `<div class="s station-eq" title="${esc(st.explanation)}">≈ <b>${num(d.summary.max_ozone_station_equivalent,0)} µg/m³</b> at a typical CPCB station (±${num(st.typical_error_vs_stations,0)})</div>` : ''}</div>
     <div class="card kpi quality-${esc(q.tier)}"><div class="l">Prediction quality</div><div class="v" style="text-transform:capitalize">${esc(q.tier)}</div>
       <div class="s">${num(q.distance_to_nearest_training_point_km,0)} km from nearest training point${evLine ? ` · measured MAE: UV ${num(evLine.uv,2)}, O₃ ${num(evLine.ozone,1)} µg/m³` : ''}</div></div>
   </div>
@@ -66,10 +67,11 @@ function render(d) {
   <div class="card" style="margin-top:18px"><h3>Ground-level ozone forecast</h3><p>Surface ozone concentration (µg/m³) — not the total-column ozone (DU) shown on the Location page.</p><div class="chartbox"><canvas id="ozch"></canvas></div></div>
 
   <div class="grid two" style="margin-top:18px">
-    <div class="card"><h3>Hourly forecast</h3><div class="tw"><table class="ptable"><thead><tr><th>Time (IST)</th><th class="num">UV</th><th>Risk</th><th class="num">O₃ µg/m³</th><th class="num hide-sm">O₃ anomaly (z)</th><th class="num hide-sm">Cloud %</th><th class="num hide-sm">Temp °C</th></tr></thead><tbody>
+    <div class="card"><h3>Hourly forecast</h3><div class="tw"><table class="ptable"><thead><tr><th>Time (IST)</th><th class="num">UV</th><th>Risk</th><th class="num">O₃ µg/m³</th>${st ? '<th class="num hide-sm" title="Approximate value a typical CPCB station would report">O₃ station-eq.</th>' : ''}<th class="num hide-sm">O₃ anomaly (z)</th><th class="num hide-sm">Cloud %</th><th class="num hide-sm">Temp °C</th></tr></thead><tbody>
       ${P.map((p, i) => `<tr class="${i === peakIdx ? 'peak-row' : ''}"><td>${esc(istTime(p.time_ist))}</td>
         <td class="num">${num(p.uv.value,1)}<div class="range">${num(p.uv.lower,1)}–${num(p.uv.upper,1)}</div></td><td>${badge(p.uv.risk)}</td>
         <td class="num">${num(p.ozone.value,0)}<div class="range">${num(p.ozone.lower,0)}–${num(p.ozone.upper,0)}</div></td>
+        ${st ? `<td class="num hide-sm">${num(p.ozone.station_equivalent,0)}</td>` : ''}
         <td class="num hide-sm">${p.ozone.anomaly ? num(p.ozone.anomaly.standardized,2) : '—'}</td>
         <td class="num hide-sm">${num(p.weather.cloud_cover_pct,0)}</td><td class="num hide-sm">${num(p.weather.temperature_c,1)}</td></tr>`).join('')}
     </tbody></table></div></div>
@@ -77,12 +79,14 @@ function render(d) {
       <div class="facts">
         <div><span>Ozone target</span><b>${esc(d.targets.ozone.quantity)} (${esc(d.targets.ozone.unit)})</b></div>
         <div><span>UV target</span><b>${esc(d.targets.uv.quantity)}</b></div>
+        ${st ? `<div><span>Station-equivalent O₃</span><b>CAMS × ${num(st.factor,2)} · typical error ±${num(st.typical_error_vs_stations,0)} µg/m³ vs ${esc(st.stations)} CPCB stations</b></div>` : ''}
         <div><span>Ranges</span><b>~90% of past outcomes fell inside</b></div>
         <div><span>Ozone anomaly</span><b>${esc(d.data_status.anomaly)}</b></div>
         <div><span>Models</span><b>O₃: ${esc(d.model.ozone_algorithm)} · UV: ${esc(d.model.uv_algorithm)} · v${esc(d.model.version)}</b></div>
         <div><span>UV uses predicted ozone</span><b>${d.model.uv_uses_predicted_ozone ? 'yes' : 'no (did not improve validation error)'}</b></div>
       </div>
-      <p style="margin-top:10px">${esc(d.uncertainty.meaning)}</p>
+      <p style="margin-top:10px">${esc(d.uncertainty.meaning)}</p>${st ? `
+      <p style="margin-top:8px">${esc(st.explanation)}</p>` : ''}
       <p style="margin-top:8px">${esc(q.explanation)}</p>
       <h3 style="margin-top:16px">General sun guidance</h3>
       <ul class="tip-list"><li>When UV is 3 or higher, consider shade, a hat, sunglasses and sunscreen.</li><li>When UV is 6 or higher, limit long periods in direct midday sun.</li><li>This is general environmental information, not medical advice.</li></ul>
