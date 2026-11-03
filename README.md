@@ -14,7 +14,7 @@
   <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white">
   <img alt="FastAPI" src="https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white">
   <img alt="Models: XGBoost and LSTM" src="https://img.shields.io/badge/models-XGBoost%20%7C%20LSTM-2e43b8">
-  <img alt="120 tests" src="https://img.shields.io/badge/tests-120%20passing-2e7d32">
+  <a href="https://github.com/rohithk2626/OzoneGuard-AI/actions/workflows/tests.yml"><img alt="Tests" src="https://github.com/rohithk2626/OzoneGuard-AI/actions/workflows/tests.yml/badge.svg"></a>
   <img alt="Coverage: India" src="https://img.shields.io/badge/coverage-India-138808">
 </p>
 
@@ -282,7 +282,7 @@ python -m ml.fit_station_scale data/external/stations data/validation/cams_ozone
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The 120 tests cover data cleaning and features, both models, the India boundary, the API, the NASA reader, the station check and the error messages. They run offline, using the small sample in `data/samples/`.
+The 125 tests cover data cleaning and features, both models, the India boundary, the API, the NASA reader, place-name lookups, the station check and the error messages. They run offline, using the small sample in `data/samples/`. GitHub runs them automatically on every push ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)); the badge at the top shows the latest result.
 
 ## Accounts (optional)
 
