@@ -14,7 +14,28 @@ const UV_COLOR = Object.fromEntries(UVC.map(c => [c[1], c[2]]));
 const uvCat = v => { const r = Math.floor(Number(v) + 0.5), c = UVC.find(x => r <= x[0]); return { label: c[1], color: c[2], tip: c[3] }; };
 const riskBadge = label => `<span class="badge" style="--c:${UV_COLOR[label] || '#87939a'}">${escHtml(label || 'Unavailable')}</span>`;
 const fmtNum = (v, d = 1) => v === null || v === undefined || Number.isNaN(Number(v)) ? '—' : Number(v).toFixed(d);
-const fmt = iso => new Date(iso).toLocaleString();
+/* A time as Indians read it, always in IST: "3 Nov 2026, 3:30 pm IST". Times without an offset are taken as IST. */
+function fmtIST(iso) {
+  if (!iso) return '—';
+  const s = String(iso), d = new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(s) ? s : s + '+05:30');
+  if (Number.isNaN(d.getTime())) return s;
+  const day = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
+  const time = d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' }).toLowerCase();
+  return `${day}, ${time} IST`;
+}
+
+/* On narrow screens the results sit below the form and the map. When the visitor starts a lookup,
+ * scroll the results area into view so it is clear something is happening. Only for clicks and taps,
+ * never for a lookup that runs by itself when the page opens. */
+function revealResults(el) {
+  if (!el || window.innerWidth >= 900) return;
+  if (navigator.userActivation && !navigator.userActivation.isActive) return;
+  const top = el.getBoundingClientRect().top;
+  if (top < 0 || top > window.innerHeight * 0.7) {
+    const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+  }
+}
 
 /* UV index scale, 0 to 11+, in the WHO category colours, with a marker at `value` (omit it for a plain key).
  * Category edges sit at 2.5, 5.5, 7.5 and 10.5 because the index is rounded before it is categorised. */

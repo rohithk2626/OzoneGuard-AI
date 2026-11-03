@@ -148,6 +148,7 @@
     place = setPlace(lat, lon, known ? known.name : null);
     marker.setLatLng([lat, lon]);
     $('#out').innerHTML = '<div class="card state">Loading real history… (CAMS ozone and UV, plus archived weather)</div>';
+    revealResults($('#out'));
     try {
       render(await API.getHistory(lat, lon, from, to));
     } catch (e) {

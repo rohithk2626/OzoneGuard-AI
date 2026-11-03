@@ -82,10 +82,10 @@ function renderSelectedLocation(data) {
         </div>
         <div class="card">
           <p class="eyebrow">Observation</p>
-          <h3>${escapeHtml(weather.time || '—')}</h3>
+          <h3>${escapeHtml(fmtIST(weather.time))}</h3>
           <div class="facts">
-            <div><span>Timezone</span><b>${escapeHtml(weather.timezone || '—')}</b></div>
-            <div><span>Data retrieved</span><b>${escapeHtml(new Date(data.generated_at).toLocaleString())}</b></div>
+            <div><span>Time zone</span><b>${escapeHtml(weather.timezone === 'Asia/Kolkata' ? 'India Standard Time (UTC+5:30)' : (weather.timezone || '—'))}</b></div>
+            <div><span>Data retrieved</span><b>${escapeHtml(fmtIST(data.generated_at))}</b></div>
           </div>
         </div>
       </div>
@@ -123,6 +123,7 @@ async function selectCoordinates(lat, lon, source = 'map') {
   if (qp) qp.sync(latitude, longitude);
   marker.setLatLng([latitude, longitude]).bindPopup(`<b>Selected point</b><br>${escapeHtml(coordinateLabel(latitude, longitude))}`).openPopup();
   document.querySelector('#out').innerHTML = '<div class="card state">Loading live weather and UV conditions…</div>';
+  revealResults(document.querySelector('#out'));
 
   try {
     const data = await API.getLocationOverview(latitude, longitude);

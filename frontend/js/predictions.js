@@ -9,6 +9,14 @@ const esc = v => String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').
 const num = (v, d=1) => v === null || v === undefined || Number.isNaN(Number(v)) ? '—' : Number(v).toFixed(d);
 const istTime = iso => new Date(iso).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata'});
 const istDay = iso => new Date(iso).toLocaleDateString('en-IN', {weekday:'short', day:'numeric', month:'short', timeZone:'Asia/Kolkata'});
+const istDate = iso => new Date(iso).toLocaleDateString('en-CA', {timeZone:'Asia/Kolkata'});
+/* "today", "tomorrow" or the date, relative to when the forecast was issued. */
+function dayWord(iso, ref) {
+  const a = istDate(iso), b = istDate(ref);
+  if (a === b) return 'today';
+  const next = new Date(b + 'T00:00:00Z'); next.setUTCDate(next.getUTCDate() + 1);
+  return a === next.toISOString().slice(0, 10) ? 'tomorrow' : istDay(iso);
+}
 const badge = r => `<span class="badge" style="--c:${RISK_COLOR[r] || '#87939a'}">${esc(r)}</span>`;
 
 /* The selected point is shared with the other pages (js/main.js). */
@@ -27,6 +35,7 @@ async function forecast(lat, lon) {
   if (qp) qp.sync(lat, lon);
   pmarker.setLatLng([lat, lon]); saveCoords(lat, lon);
   $('#out').innerHTML = '<div class="card state">Running the forecast models… (fetching latest CAMS composition and weather forecast)</div>';
+  revealResults($('#out'));
   try {
     render(await API.getPredictions24h(lat, lon, $('#model').value));
   } catch (e) {
@@ -39,12 +48,13 @@ async function forecast(lat, lon) {
 
 function render(d) {
   const P = d.predictions, pk = d.peak_uv, q = d.prediction_quality;
+  const ref = d.issue_time_ist;
   const labels = P.map(p => istTime(p.time_ist));
   const win = d.high_risk_windows.length
-    ? d.high_risk_windows.map(w => `<span>${istTime(w.start_ist)} – ${istTime(w.end_ist)}</span>`).join('')
+    ? d.high_risk_windows.map(w => `<span>${istTime(w.start_ist)} – ${istTime(w.end_ist)} ${dayWord(w.start_ist, ref)}</span>`).join('')
     : '<em class="mut">No hour is forecast at High (6+) or above.</em>';
   const winUpper = d.possible_high_risk_windows_upper_bound.length && !d.high_risk_windows.length
-    ? `<p class="s">Upper end of the range reaches High: ${d.possible_high_risk_windows_upper_bound.map(w => `${istTime(w.start_ist)}–${istTime(w.end_ist)}`).join(', ')}</p>` : '';
+    ? `<p class="s">Upper end of the range reaches High: ${d.possible_high_risk_windows_upper_bound.map(w => `${istTime(w.start_ist)}–${istTime(w.end_ist)} ${dayWord(w.start_ist, ref)}`).join(', ')}</p>` : '';
   const ev = q.evidence || {};
   const evLine = q.tier === 'high' ? ev.test_mae_seen_locations : ev.test_mae_unseen_holdout_locations;
   const peakIdx = P.findIndex(p => p.time_utc === pk.time_utc);
@@ -55,7 +65,7 @@ function render(d) {
     <h2>Next 24 hours${loadCoords()?.name ? ` · ${esc(loadCoords().name)}` : ''}</h2><p class="mut">${num(d.location.latitude,4)}° N, ${num(d.location.longitude,4)}° E · times shown in IST (UTC+5:30)</p></div></div>
   <div class="pred-kpis">
     <div class="card kpi peak" style="--c:${RISK_COLOR[pk.risk] || '#999'}"><div class="l">Peak UV</div><div class="v">${num(pk.value,1)}</div>
-      <div class="s">${badge(pk.risk)} at ${esc(istTime(pk.time_ist))} · range ${num(pk.lower,1)}–${num(pk.upper,1)}</div>${uvScale(pk.value)}</div>
+      <div class="s">${badge(pk.risk)} at ${esc(istTime(pk.time_ist))} ${esc(dayWord(pk.time_ist, ref))} · range ${num(pk.lower,1)}–${num(pk.upper,1)}</div>${uvScale(pk.value)}</div>
     <div class="card kpi"><div class="l">High-risk window (UV 6+)</div><div class="window-list">${win}</div>${winUpper}</div>
     <div class="card kpi"><div class="l">Surface ozone (max)</div><div class="v">${num(d.summary.max_ozone,0)}<small>µg/m³</small></div>
       <div class="s">min ${num(d.summary.min_ozone,0)} µg/m³ over the next 24 h</div>${st ? `<div class="s station-eq" title="${esc(st.explanation)}">≈ <b>${num(d.summary.max_ozone_station_equivalent,0)} µg/m³</b> at a typical CPCB station (±${num(st.typical_error_vs_stations,0)})</div>` : ''}</div>
@@ -68,7 +78,7 @@ function render(d) {
 
   <div class="grid two" style="margin-top:18px">
     <div class="card"><h3>Hourly forecast</h3><div class="tw"><table class="ptable"><thead><tr><th>Time (IST)</th><th class="num">UV</th><th>Risk</th><th class="num">O₃ µg/m³</th>${st ? '<th class="num hide-sm" title="Approximate value a typical CPCB station would report">O₃ station-eq.</th>' : ''}<th class="num hide-sm">O₃ anomaly (z)</th><th class="num hide-sm">Cloud %</th><th class="num hide-sm">Temp °C</th></tr></thead><tbody>
-      ${P.map((p, i) => `<tr class="${i === peakIdx ? 'peak-row' : ''}"><td>${esc(istTime(p.time_ist))}</td>
+      ${P.map((p, i) => `<tr class="${i === peakIdx ? 'peak-row' : ''}"><td>${esc(istTime(p.time_ist))}${i === 0 || istDate(p.time_ist) !== istDate(P[i - 1].time_ist) ? `<div class="range">${esc(istDay(p.time_ist))}</div>` : ''}</td>
         <td class="num">${num(p.uv.value,1)}<div class="range">${num(p.uv.lower,1)}–${num(p.uv.upper,1)}</div></td><td>${badge(p.uv.risk)}</td>
         <td class="num">${num(p.ozone.value,0)}<div class="range">${num(p.ozone.lower,0)}–${num(p.ozone.upper,0)}</div></td>
         ${st ? `<td class="num hide-sm">${num(p.ozone.station_equivalent,0)}</td>` : ''}
