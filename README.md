@@ -282,7 +282,7 @@ python -m ml.fit_station_scale data/external/stations data/validation/cams_ozone
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The 125 tests cover data cleaning and features, both models, the India boundary, the API, the NASA reader, place-name lookups, the station check and the error messages. They run offline, using the small sample in `data/samples/`. GitHub runs them automatically on every push ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)); the badge at the top shows the latest result.
+The 126 tests cover data cleaning and features, both models, the India boundary, the API, the NASA reader, place-name lookups, the station check and the error messages. They run offline, using the small sample in `data/samples/`. GitHub runs them automatically on every push ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)); the badge at the top shows the latest result.
 
 ## Accounts (optional)
 

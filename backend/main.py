@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -24,6 +24,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def check_for_updates(request: Request, call_next):
+    """Website files: tell browsers to check for a newer version on every visit (a quick check
+    that returns "not modified" if nothing changed). Without this, browsers may keep showing an
+    old copy of a page, its script or its icon for days after the site is updated."""
+    response = await call_next(request)
+    if not request.url.path.startswith(("/api", "/docs", "/redoc", "/openapi.json")):
+        response.headers.setdefault("Cache-Control", "no-cache")
+    return response
+
 
 app.include_router(health_router, prefix="/api/v1")
 app.include_router(location_router, prefix="/api/v1")
