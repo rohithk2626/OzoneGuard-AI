@@ -1,0 +1,1018 @@
+{
+ "location": {
+  "latitude": 17.39,
+  "longitude": 78.49,
+  "cams_cell": [
+   17.400002,
+   78.5
+  ],
+  "nwp_cell": [
+   17.398945,
+   78.457085
+  ],
+  "elevation_m": 502.0
+ },
+ "generated_at": "2026-10-30T04:57:56.245754+00:00",
+ "issue_time_utc": "2026-10-30T04:00:00+00:00",
+ "issue_time_ist": "2026-10-30T09:30:00+05:30",
+ "horizon_hours": 24,
+ "predictions": [
+  {
+   "lead_hours": 1,
+   "time_utc": "2026-10-30T05:00:00+00:00",
+   "time_ist": "2026-10-30T10:30:00+05:30",
+   "ozone": {
+    "value": 112.0,
+    "lower": 95.8,
+    "upper": 128.2,
+    "anomaly": {
+     "absolute": -3.06,
+     "standardized": -0.11,
+     "climatology_mean": 115.08,
+     "climatology_std": 26.89
+    }
+   },
+   "uv": {
+    "value": 5.62,
+    "lower": 3.99,
+    "upper": 7.25,
+    "risk": "High",
+    "risk_level": 2
+   },
+   "solar_elevation_deg": 51.8,
+   "weather": {
+    "temperature_c": 28.8,
+    "relative_humidity_pct": 58.0,
+    "cloud_cover_pct": 20.0,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 3.0,
+    "shortwave_radiation_wm2": 659.0
+   }
+  },
+  {
+   "lead_hours": 2,
+   "time_utc": "2026-10-30T06:00:00+00:00",
+   "time_ist": "2026-10-30T11:30:00+05:30",
+   "ozone": {
+    "value": 121.1,
+    "lower": 103.0,
+    "upper": 139.1,
+    "anomaly": {
+     "absolute": -9.97,
+     "standardized": -0.36,
+     "climatology_mean": 131.03,
+     "climatology_std": 27.35
+    }
+   },
+   "uv": {
+    "value": 6.65,
+    "lower": 5.11,
+    "upper": 8.19,
+    "risk": "High",
+    "risk_level": 2
+   },
+   "solar_elevation_deg": 58.0,
+   "weather": {
+    "temperature_c": 29.5,
+    "relative_humidity_pct": 55.0,
+    "cloud_cover_pct": 45.0,
+    "precipitation_mm": 0.1,
+    "wind_speed_kmh": 3.9,
+    "shortwave_radiation_wm2": 726.0
+   }
+  },
+  {
+   "lead_hours": 3,
+   "time_utc": "2026-10-30T07:00:00+00:00",
+   "time_ist": "2026-10-30T12:30:00+05:30",
+   "ozone": {
+    "value": 123.1,
+    "lower": 105.0,
+    "upper": 141.1,
+    "anomaly": {
+     "absolute": -14.32,
+     "standardized": -0.53,
+     "climatology_mean": 137.37,
+     "climatology_std": 27.11
+    }
+   },
+   "uv": {
+    "value": 5.72,
+    "lower": 4.09,
+    "upper": 7.35,
+    "risk": "High",
+    "risk_level": 2
+   },
+   "solar_elevation_deg": 57.9,
+   "weather": {
+    "temperature_c": 30.1,
+    "relative_humidity_pct": 53.0,
+    "cloud_cover_pct": 40.0,
+    "precipitation_mm": 0.1,
+    "wind_speed_kmh": 4.2,
+    "shortwave_radiation_wm2": 717.0
+   }
+  },
+  {
+   "lead_hours": 4,
+   "time_utc": "2026-10-30T08:00:00+00:00",
+   "time_ist": "2026-10-30T13:30:00+05:30",
+   "ozone": {
+    "value": 123.3,
+    "lower": 97.7,
+    "upper": 148.9,
+    "anomaly": {
+     "absolute": -16.04,
+     "standardized": -0.63,
+     "climatology_mean": 139.32,
+     "climatology_std": 25.65
+    }
+   },
+   "uv": {
+    "value": 4.34,
+    "lower": 2.6,
+    "upper": 6.08,
+    "risk": "Moderate",
+    "risk_level": 1
+   },
+   "solar_elevation_deg": 51.6,
+   "weather": {
+    "temperature_c": 30.5,
+    "relative_humidity_pct": 51.0,
+    "cloud_cover_pct": 34.0,
+    "precipitation_mm": 0.3,
+    "wind_speed_kmh": 2.7,
+    "shortwave_radiation_wm2": 669.0
+   }
+  },
+  {
+   "lead_hours": 5,
+   "time_utc": "2026-10-30T09:00:00+00:00",
+   "time_ist": "2026-10-30T14:30:00+05:30",
+   "ozone": {
+    "value": 117.7,
+    "lower": 95.7,
+    "upper": 139.8,
+    "anomaly": {
+     "absolute": -17.9,
+     "standardized": -0.75,
+     "climatology_mean": 135.61,
+     "climatology_std": 23.9
+    }
+   },
+   "uv": {
+    "value": 2.7,
+    "lower": 2.01,
+    "upper": 3.4,
+    "risk": "Moderate",
+    "risk_level": 1
+   },
+   "solar_elevation_deg": 41.5,
+   "weather": {
+    "temperature_c": 30.6,
+    "relative_humidity_pct": 52.0,
+    "cloud_cover_pct": 84.0,
+    "precipitation_mm": 0.1,
+    "wind_speed_kmh": 3.3,
+    "shortwave_radiation_wm2": 603.0
+   }
+  },
+  {
+   "lead_hours": 6,
+   "time_utc": "2026-10-30T10:00:00+00:00",
+   "time_ist": "2026-10-30T15:30:00+05:30",
+   "ozone": {
+    "value": 109.0,
+    "lower": 87.0,
+    "upper": 131.1,
+    "anomaly": {
+     "absolute": -15.92,
+     "standardized": -0.73,
+     "climatology_mean": 124.94,
+     "climatology_std": 21.85
+    }
+   },
+   "uv": {
+    "value": 1.31,
+    "lower": 0.62,
+    "upper": 2.01,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": 29.4,
+   "weather": {
+    "temperature_c": 30.3,
+    "relative_humidity_pct": 52.0,
+    "cloud_cover_pct": 100.0,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 1.5,
+    "shortwave_radiation_wm2": 399.0
+   }
+  },
+  {
+   "lead_hours": 7,
+   "time_utc": "2026-10-30T11:00:00+00:00",
+   "time_ist": "2026-10-30T16:30:00+05:30",
+   "ozone": {
+    "value": 97.7,
+    "lower": 73.5,
+    "upper": 121.9,
+    "anomaly": {
+     "absolute": -11.45,
+     "standardized": -0.58,
+     "climatology_mean": 109.15,
+     "climatology_std": 19.78
+    }
+   },
+   "uv": {
+    "value": 0.35,
+    "lower": 0.33,
+    "upper": 0.36,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": 16.4,
+   "weather": {
+    "temperature_c": 29.1,
+    "relative_humidity_pct": 56.0,
+    "cloud_cover_pct": 60.0,
+    "precipitation_mm": 0.1,
+    "wind_speed_kmh": 3.7,
+    "shortwave_radiation_wm2": 122.0
+   }
+  },
+  {
+   "lead_hours": 8,
+   "time_utc": "2026-10-30T12:00:00+00:00",
+   "time_ist": "2026-10-30T17:30:00+05:30",
+   "ozone": {
+    "value": 84.5,
+    "lower": 60.3,
+    "upper": 108.7,
+    "anomaly": {
+     "absolute": -8.46,
+     "standardized": -0.4,
+     "climatology_mean": 92.95,
+     "climatology_std": 21.06
+    }
+   },
+   "uv": {
+    "value": 0.0,
+    "lower": 0.0,
+    "upper": 0.02,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": 2.7,
+   "weather": {
+    "temperature_c": 27.8,
+    "relative_humidity_pct": 63.0,
+    "cloud_cover_pct": 61.0,
+    "precipitation_mm": 0.5,
+    "wind_speed_kmh": 6.0,
+    "shortwave_radiation_wm2": 72.0
+   }
+  },
+  {
+   "lead_hours": 9,
+   "time_utc": "2026-10-30T13:00:00+00:00",
+   "time_ist": "2026-10-30T18:30:00+05:30",
+   "ozone": {
+    "value": 74.4,
+    "lower": 51.4,
+    "upper": 97.3,
+    "anomaly": {
+     "absolute": -6.07,
+     "standardized": -0.32,
+     "climatology_mean": 80.45,
+     "climatology_std": 18.99
+    }
+   },
+   "uv": {
+    "value": 0.0,
+    "lower": 0.0,
+    "upper": 0.0,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": -11.2,
+   "weather": {
+    "temperature_c": 27.4,
+    "relative_humidity_pct": 66.0,
+    "cloud_cover_pct": 65.0,
+    "precipitation_mm": 0.1,
+    "wind_speed_kmh": 5.8,
+    "shortwave_radiation_wm2": 1.0
+   }
+  },
+  {
+   "lead_hours": 10,
+   "time_utc": "2026-10-30T14:00:00+00:00",
+   "time_ist": "2026-10-30T19:30:00+05:30",
+   "ozone": {
+    "value": 63.5,
+    "lower": 40.5,
+    "upper": 86.4,
+    "anomaly": {
+     "absolute": 0.21,
+     "standardized": 0.01,
+     "climatology_mean": 63.26,
+     "climatology_std": 17.45
+    }
+   },
+   "uv": {
+    "value": 0.0,
+    "lower": 0.0,
+    "upper": 0.0,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": -25.3,
+   "weather": {
+    "temperature_c": 27.3,
+    "relative_humidity_pct": 66.0,
+    "cloud_cover_pct": 88.0,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 1.8,
+    "shortwave_radiation_wm2": 0.0
+   }
+  },
+  {
+   "lead_hours": 11,
+   "time_utc": "2026-10-30T15:00:00+00:00",
+   "time_ist": "2026-10-30T20:30:00+05:30",
+   "ozone": {
+    "value": 49.4,
+    "lower": 26.5,
+    "upper": 72.4,
+    "anomaly": {
+     "absolute": 0.6,
+     "standardized": 0.03,
+     "climatology_mean": 48.84,
+     "climatology_std": 18.78
+    }
+   },
+   "uv": {
+    "value": 0.0,
+    "lower": 0.0,
+    "upper": 0.0,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": -39.6,
+   "weather": {
+    "temperature_c": 26.4,
+    "relative_humidity_pct": 70.0,
+    "cloud_cover_pct": 52.0,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 7.2,
+    "shortwave_radiation_wm2": 0.0
+   }
+  },
+  {
+   "lead_hours": 12,
+   "time_utc": "2026-10-30T16:00:00+00:00",
+   "time_ist": "2026-10-30T21:30:00+05:30",
+   "ozone": {
+    "value": 48.2,
+    "lower": 25.3,
+    "upper": 71.2,
+    "anomaly": {
+     "absolute": 2.63,
+     "standardized": 0.13,
+     "climatology_mean": 45.6,
+     "climatology_std": 19.68
+    }
+   },
+   "uv": {
+    "value": 0.0,
+    "lower": 0.0,
+    "upper": 0.0,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": -53.9,
+   "weather": {
+    "temperature_c": 24.1,
+    "relative_humidity_pct": 78.0,
+    "cloud_cover_pct": 100.0,
+    "precipitation_mm": 0.1,
+    "wind_speed_kmh": 6.6,
+    "shortwave_radiation_wm2": 0.0
+   }
+  },
+  {
+   "lead_hours": 13,
+   "time_utc": "2026-10-30T17:00:00+00:00",
+   "time_ist": "2026-10-30T22:30:00+05:30",
+   "ozone": {
+    "value": 53.3,
+    "lower": 29.3,
+    "upper": 77.3,
+    "anomaly": {
+     "absolute": 6.33,
+     "standardized": 0.3,
+     "climatology_mean": 47.0,
+     "climatology_std": 20.94
+    }
+   },
+   "uv": {
+    "value": 0.0,
+    "lower": 0.0,
+    "upper": 0.0,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": -68.2,
+   "weather": {
+    "temperature_c": 22.7,
+    "relative_humidity_pct": 87.0,
+    "cloud_cover_pct": 61.0,
+    "precipitation_mm": 1.5,
+    "wind_speed_kmh": 9.9,
+    "shortwave_radiation_wm2": 0.0
+   }
+  },
+  {
+   "lead_hours": 14,
+   "time_utc": "2026-10-30T18:00:00+00:00",
+   "time_ist": "2026-10-30T23:30:00+05:30",
+   "ozone": {
+    "value": 48.2,
+    "lower": 24.2,
+    "upper": 72.2,
+    "anomaly": {
+     "absolute": -1.68,
+     "standardized": -0.08,
+     "climatology_mean": 49.9,
+     "climatology_std": 21.87
+    }
+   },
+   "uv": {
+    "value": 0.0,
+    "lower": 0.0,
+    "upper": 0.0,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": -82.1,
+   "weather": {
+    "temperature_c": 22.8,
+    "relative_humidity_pct": 88.0,
+    "cloud_cover_pct": 37.0,
+    "precipitation_mm": 0.1,
+    "wind_speed_kmh": 6.1,
+    "shortwave_radiation_wm2": 0.0
+   }
+  },
+  {
+   "lead_hours": 15,
+   "time_utc": "2026-10-30T19:00:00+00:00",
+   "time_ist": "2026-10-31T00:30:00+05:30",
+   "ozone": {
+    "value": 49.6,
+    "lower": 25.6,
+    "upper": 73.5,
+    "anomaly": {
+     "absolute": -2.71,
+     "standardized": -0.13,
+     "climatology_mean": 52.26,
+     "climatology_std": 21.49
+    }
+   },
+   "uv": {
+    "value": 0.0,
+    "lower": 0.0,
+    "upper": 0.0,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": -81.9,
+   "weather": {
+    "temperature_c": 22.6,
+    "relative_humidity_pct": 90.0,
+    "cloud_cover_pct": 39.0,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 5.7,
+    "shortwave_radiation_wm2": 0.0
+   }
+  },
+  {
+   "lead_hours": 16,
+   "time_utc": "2026-10-30T20:00:00+00:00",
+   "time_ist": "2026-10-31T01:30:00+05:30",
+   "ozone": {
+    "value": 55.5,
+    "lower": 31.5,
+    "upper": 79.5,
+    "anomaly": {
+     "absolute": 0.09,
+     "standardized": 0.0,
+     "climatology_mean": 55.39,
+     "climatology_std": 20.84
+    }
+   },
+   "uv": {
+    "value": 0.0,
+    "lower": 0.0,
+    "upper": 0.0,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": -68.0,
+   "weather": {
+    "temperature_c": 22.6,
+    "relative_humidity_pct": 90.0,
+    "cloud_cover_pct": 14.0,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 7.4,
+    "shortwave_radiation_wm2": 0.0
+   }
+  },
+  {
+   "lead_hours": 17,
+   "time_utc": "2026-10-30T21:00:00+00:00",
+   "time_ist": "2026-10-31T02:30:00+05:30",
+   "ozone": {
+    "value": 57.7,
+    "lower": 33.7,
+    "upper": 81.7,
+    "anomaly": {
+     "absolute": -0.71,
+     "standardized": -0.04,
+     "climatology_mean": 58.42,
+     "climatology_std": 19.96
+    }
+   },
+   "uv": {
+    "value": 0.0,
+    "lower": 0.0,
+    "upper": 0.0,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": -53.7,
+   "weather": {
+    "temperature_c": 22.3,
+    "relative_humidity_pct": 92.0,
+    "cloud_cover_pct": 23.0,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 5.8,
+    "shortwave_radiation_wm2": 0.0
+   }
+  },
+  {
+   "lead_hours": 18,
+   "time_utc": "2026-10-30T22:00:00+00:00",
+   "time_ist": "2026-10-31T03:30:00+05:30",
+   "ozone": {
+    "value": 57.9,
+    "lower": 33.9,
+    "upper": 81.9,
+    "anomaly": {
+     "absolute": -0.97,
+     "standardized": -0.05,
+     "climatology_mean": 58.89,
+     "climatology_std": 18.69
+    }
+   },
+   "uv": {
+    "value": 0.0,
+    "lower": 0.0,
+    "upper": 0.0,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": -39.4,
+   "weather": {
+    "temperature_c": 22.2,
+    "relative_humidity_pct": 93.0,
+    "cloud_cover_pct": 63.0,
+    "precipitation_mm": 0.1,
+    "wind_speed_kmh": 4.9,
+    "shortwave_radiation_wm2": 0.0
+   }
+  },
+  {
+   "lead_hours": 19,
+   "time_utc": "2026-10-30T23:00:00+00:00",
+   "time_ist": "2026-10-31T04:30:00+05:30",
+   "ozone": {
+    "value": 56.8,
+    "lower": 32.8,
+    "upper": 80.8,
+    "anomaly": {
+     "absolute": -1.95,
+     "standardized": -0.11,
+     "climatology_mean": 58.76,
+     "climatology_std": 17.41
+    }
+   },
+   "uv": {
+    "value": 0.0,
+    "lower": 0.0,
+    "upper": 0.0,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": -25.2,
+   "weather": {
+    "temperature_c": 22.2,
+    "relative_humidity_pct": 93.0,
+    "cloud_cover_pct": 46.0,
+    "precipitation_mm": 0.1,
+    "wind_speed_kmh": 5.5,
+    "shortwave_radiation_wm2": 0.0
+   }
+  },
+  {
+   "lead_hours": 20,
+   "time_utc": "2026-10-31T00:00:00+00:00",
+   "time_ist": "2026-10-31T05:30:00+05:30",
+   "ozone": {
+    "value": 54.7,
+    "lower": 30.7,
+    "upper": 78.7,
+    "anomaly": {
+     "absolute": -4.14,
+     "standardized": -0.22,
+     "climatology_mean": 58.81,
+     "climatology_std": 18.58
+    }
+   },
+   "uv": {
+    "value": 0.0,
+    "lower": 0.0,
+    "upper": 0.0,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": -11.1,
+   "weather": {
+    "temperature_c": 22.0,
+    "relative_humidity_pct": 92.0,
+    "cloud_cover_pct": 33.0,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 4.1,
+    "shortwave_radiation_wm2": 0.0
+   }
+  },
+  {
+   "lead_hours": 21,
+   "time_utc": "2026-10-31T01:00:00+00:00",
+   "time_ist": "2026-10-31T06:30:00+05:30",
+   "ozone": {
+    "value": 59.6,
+    "lower": 35.6,
+    "upper": 83.6,
+    "anomaly": {
+     "absolute": -4.26,
+     "standardized": -0.24,
+     "climatology_mean": 63.84,
+     "climatology_std": 17.43
+    }
+   },
+   "uv": {
+    "value": 0.06,
+    "lower": 0.05,
+    "upper": 0.08,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": 2.9,
+   "weather": {
+    "temperature_c": 21.9,
+    "relative_humidity_pct": 92.0,
+    "cloud_cover_pct": 19.0,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 4.2,
+    "shortwave_radiation_wm2": 2.0
+   }
+  },
+  {
+   "lead_hours": 22,
+   "time_utc": "2026-10-31T02:00:00+00:00",
+   "time_ist": "2026-10-31T07:30:00+05:30",
+   "ozone": {
+    "value": 69.4,
+    "lower": 45.4,
+    "upper": 93.3,
+    "anomaly": {
+     "absolute": -1.8,
+     "standardized": -0.09,
+     "climatology_mean": 71.16,
+     "climatology_std": 19.52
+    }
+   },
+   "uv": {
+    "value": 0.63,
+    "lower": 0.0,
+    "upper": 1.35,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": 16.4,
+   "weather": {
+    "temperature_c": 22.5,
+    "relative_humidity_pct": 89.0,
+    "cloud_cover_pct": 100.0,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 2.7,
+    "shortwave_radiation_wm2": 88.0
+   }
+  },
+  {
+   "lead_hours": 23,
+   "time_utc": "2026-10-31T03:00:00+00:00",
+   "time_ist": "2026-10-31T08:30:00+05:30",
+   "ozone": {
+    "value": 81.9,
+    "lower": 56.4,
+    "upper": 107.3,
+    "anomaly": {
+     "absolute": -0.22,
+     "standardized": -0.01,
+     "climatology_mean": 82.1,
+     "climatology_std": 22.92
+    }
+   },
+   "uv": {
+    "value": 1.97,
+    "lower": 1.24,
+    "upper": 2.69,
+    "risk": "Low",
+    "risk_level": 0
+   },
+   "solar_elevation_deg": 29.5,
+   "weather": {
+    "temperature_c": 24.1,
+    "relative_humidity_pct": 81.0,
+    "cloud_cover_pct": 96.0,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 0.6,
+    "shortwave_radiation_wm2": 207.0
+   }
+  },
+  {
+   "lead_hours": 24,
+   "time_utc": "2026-10-31T04:00:00+00:00",
+   "time_ist": "2026-10-31T09:30:00+05:30",
+   "ozone": {
+    "value": 99.0,
+    "lower": 73.5,
+    "upper": 124.4,
+    "anomaly": {
+     "absolute": 1.66,
+     "standardized": 0.07,
+     "climatology_mean": 97.29,
+     "climatology_std": 25.12
+    }
+   },
+   "uv": {
+    "value": 3.78,
+    "lower": 1.93,
+    "upper": 5.63,
+    "risk": "Moderate",
+    "risk_level": 1
+   },
+   "solar_elevation_deg": 41.5,
+   "weather": {
+    "temperature_c": 25.6,
+    "relative_humidity_pct": 72.0,
+    "cloud_cover_pct": 13.0,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 0.8,
+    "shortwave_radiation_wm2": 315.0
+   }
+  }
+ ],
+ "peak_uv": {
+  "value": 6.65,
+  "lower": 5.11,
+  "upper": 8.19,
+  "time_utc": "2026-10-30T06:00:00+00:00",
+  "time_ist": "2026-10-30T11:30:00+05:30",
+  "risk": "High"
+ },
+ "high_risk_windows": [
+  {
+   "start_utc": "2026-10-30T05:00:00+00:00",
+   "end_utc": "2026-10-30T08:00:00+00:00",
+   "start_ist": "2026-10-30T10:30:00+05:30",
+   "end_ist": "2026-10-30T13:30:00+05:30",
+   "hours": 3
+  }
+ ],
+ "possible_high_risk_windows_upper_bound": [
+  {
+   "start_utc": "2026-10-30T05:00:00+00:00",
+   "end_utc": "2026-10-30T09:00:00+00:00",
+   "start_ist": "2026-10-30T10:30:00+05:30",
+   "end_ist": "2026-10-30T14:30:00+05:30",
+   "hours": 4
+  },
+  {
+   "start_utc": "2026-10-31T04:00:00+00:00",
+   "end_utc": "2026-10-31T05:00:00+00:00",
+   "start_ist": "2026-10-31T09:30:00+05:30",
+   "end_ist": "2026-10-31T10:30:00+05:30",
+   "hours": 1
+  }
+ ],
+ "summary": {
+  "max_ozone": 123.3,
+  "min_ozone": 48.2,
+  "max_risk": "High"
+ },
+ "targets": {
+  "ozone": {
+   "quantity": "Surface (ground-level) ozone mass concentration",
+   "unit": "\u00b5g/m\u00b3",
+   "truth_source": "CAMS global atmospheric composition (ECMWF/Copernicus) via Open-Meteo",
+   "note": "Not total-column ozone (Dobson Units). The Location page shows NASA total-column ozone separately."
+  },
+  "uv": {
+   "quantity": "All-sky UV index",
+   "unit": "UV index (WHO scale)",
+   "truth_source": "CAMS UV index via Open-Meteo (model-derived; no public ground UV network for India)"
+  }
+ },
+ "uncertainty": {
+  "method": "Split-conformal prediction (Mondrian by lead time and predicted level), calibrated on Oct 2024\u2013Sep 2025",
+  "nominal_coverage": 0.9,
+  "meaning": "Ranges are built so that ~90 % of past outcomes fell inside them for similar lead times and levels. They are empirical ranges, not a guarantee and not a 'confidence' score."
+ },
+ "prediction_quality": {
+  "tier": "high",
+  "distance_to_nearest_training_point_km": 0.0,
+  "explanation": "Within 50 km of a training location: test-period accuracy applies.",
+  "evidence": {
+   "test_mae_seen_locations": {
+    "ozone": 10.57,
+    "uv": 0.2
+   },
+   "test_mae_unseen_holdout_locations": {
+    "ozone": 10.98,
+    "uv": 0.21
+   },
+   "interval_coverage_test": {
+    "ozone": 0.903,
+    "uv": 0.912
+   }
+  }
+ },
+ "model": {
+  "name": "xgboost",
+  "version": "1.0.0",
+  "dataset_version": "og-cams-ifs-2022.08-2026.10-v1",
+  "ozone_algorithm": "XGBoost",
+  "uv_algorithm": "XGBoost",
+  "uv_uses_predicted_ozone": false,
+  "trained_at": "2026-10-07T06:56:11.150152+00:00"
+ },
+ "data_status": {
+  "composition": "live",
+  "weather_forecast": "live",
+  "notes": [],
+  "anomaly": "standardized vs train-period climatology of 'hyderabad'",
+  "sources": [
+   {
+    "name": "CAMS via Open-Meteo Air Quality API",
+    "purpose": "Recent surface ozone, UV, NO\u2082, AOD (inputs up to issue hour)",
+    "status": "live"
+   },
+   {
+    "name": "Open-Meteo Forecast API (best_match)",
+    "purpose": "Weather forecast for the next 24 h",
+    "status": "live"
+   },
+   {
+    "name": "NOAA solar position equations",
+    "purpose": "Solar elevation / zenith",
+    "status": "computed"
+   }
+  ]
+ },
+ "reference_cams_raw_forecast": [
+  {
+   "time_utc": "2026-10-30T05:00:00+00:00",
+   "ozone": 129.0,
+   "uv": 6.1
+  },
+  {
+   "time_utc": "2026-10-30T06:00:00+00:00",
+   "ozone": 146.0,
+   "uv": 6.8
+  },
+  {
+   "time_utc": "2026-10-30T07:00:00+00:00",
+   "ozone": 154.0,
+   "uv": 5.95
+  },
+  {
+   "time_utc": "2026-10-30T08:00:00+00:00",
+   "ozone": 157.0,
+   "uv": 5.4
+  },
+  {
+   "time_utc": "2026-10-30T09:00:00+00:00",
+   "ozone": 156.0,
+   "uv": 3.4
+  },
+  {
+   "time_utc": "2026-10-30T10:00:00+00:00",
+   "ozone": 151.0,
+   "uv": 1.6
+  },
+  {
+   "time_utc": "2026-10-30T11:00:00+00:00",
+   "ozone": 142.0,
+   "uv": 0.4
+  },
+  {
+   "time_utc": "2026-10-30T12:00:00+00:00",
+   "ozone": 131.0,
+   "uv": 0.0
+  },
+  {
+   "time_utc": "2026-10-30T13:00:00+00:00",
+   "ozone": 117.0,
+   "uv": 0.0
+  },
+  {
+   "time_utc": "2026-10-30T14:00:00+00:00",
+   "ozone": 102.0,
+   "uv": 0.0
+  },
+  {
+   "time_utc": "2026-10-30T15:00:00+00:00",
+   "ozone": 90.0,
+   "uv": 0.0
+  },
+  {
+   "time_utc": "2026-10-30T16:00:00+00:00",
+   "ozone": 85.0,
+   "uv": 0.0
+  },
+  {
+   "time_utc": "2026-10-30T17:00:00+00:00",
+   "ozone": 84.0,
+   "uv": 0.0
+  },
+  {
+   "time_utc": "2026-10-30T18:00:00+00:00",
+   "ozone": 85.0,
+   "uv": 0.0
+  },
+  {
+   "time_utc": "2026-10-30T19:00:00+00:00",
+   "ozone": 88.0,
+   "uv": 0.0
+  },
+  {
+   "time_utc": "2026-10-30T20:00:00+00:00",
+   "ozone": 94.0,
+   "uv": 0.0
+  },
+  {
+   "time_utc": "2026-10-30T21:00:00+00:00",
+   "ozone": 98.0,
+   "uv": 0.0
+  },
+  {
+   "time_utc": "2026-10-30T22:00:00+00:00",
+   "ozone": 100.0,
+   "uv": 0.0
+  },
+  {
+   "time_utc": "2026-10-30T23:00:00+00:00",
+   "ozone": 101.0,
+   "uv": 0.0
+  },
+  {
+   "time_utc": "2026-10-31T00:00:00+00:00",
+   "ozone": 103.0,
+   "uv": 0.0
+  },
+  {
+   "time_utc": "2026-10-31T01:00:00+00:00",
+   "ozone": 106.0,
+   "uv": 0.05
+  },
+  {
+   "time_utc": "2026-10-31T02:00:00+00:00",
+   "ozone": 110.0,
+   "uv": 0.5
+  },
+  {
+   "time_utc": "2026-10-31T03:00:00+00:00",
+   "ozone": 117.0,
+   "uv": 1.7
+  },
+  {
+   "time_utc": "2026-10-31T04:00:00+00:00",
+   "ozone": 132.0,
+   "uv": 3.5
+  }
+ ]
+}

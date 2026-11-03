@@ -4,6 +4,7 @@ No NASA login is available in tests, so the file-reading logic runs on a small s
 file laid out like the real product (several candidate scenes per 0.25-degree cell, fill
 values in empty slots, attributes stored as 1-element arrays). Network calls are replaced.
 """
+import os
 import shutil
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
@@ -48,7 +49,7 @@ def with_token(monkeypatch, tmp_path):
     monkeypatch.setattr(nasa_service, "settings",
                         replace(nasa_service.settings, nasa_earthdata_token="test-token", nasa_cache_dir=str(tmp_path / "cache")))
     nasa_service._granule_cache.update(at=0.0, value=None)
-    nasa_service._points_cache.update(key=None, value=None)
+    nasa_service._points_cache.clear()
     monkeypatch.setattr(nasa_service, "_discover_latest_granule", lambda: {
         "id": "g1", "time_start": RECENT, "url": "https://example.test/OMI-Aura_L2G-OMTO3G_2026m1006.he5", "granule": "g1"})
     return tmp_path
@@ -67,7 +68,7 @@ def test_ozone_requires_token(monkeypatch):
 
 @pytest.mark.parametrize("lat,lon", [(17.385, 78.4867), (28.61, 77.21), (8.52, 76.94), (34.15, 77.58)])
 def test_nearest_observation_from_product_layout(tmp_path, lat, lon):
-    nasa_service._points_cache.update(key=None, value=None)
+    nasa_service._points_cache.clear()
     value, distance, cell = nasa_service._nearest_ozone(_build(tmp_path / "g.he5"), lat, lon)
     assert distance < 0.3                                   # an observation in or next to the cell
     assert value == pytest.approx(_expected(lat), abs=1.0)  # and the fill values were ignored
@@ -164,3 +165,96 @@ def test_old_file_is_labelled_stale(with_token, monkeypatch):
     monkeypatch.setattr(nasa_service, "_download_granule", lambda granule, path: shutil.copy(src, path))
     r = nasa_service.get_current_ozone(17.385, 78.4867)
     assert r["status"] == "stale" and r["observation_age_days"] > 8000 and "not a current reading" in r["message"]
+
+
+def _poison_nearest(path, lat, lon, quality=None, xtrack=None):
+    """Give the observation closest to (lat, lon) a fake 88 DU value and the given flags."""
+    with h5py.File(path, "r+") as h:
+        g = h["HDFEOS/GRIDS/OMI Column Amount O3/Data Fields"]
+        la, lo = g["Latitude"][...], g["Longitude"][...]
+        ok = la > -1e29                                            # skip fill values in empty slots
+        d = np.full(la.shape, np.inf)
+        d[ok] = (la[ok].astype(np.float64) - lat) ** 2 + (lo[ok].astype(np.float64) - lon) ** 2
+        idx = np.unravel_index(np.argmin(d), d.shape)
+        o3 = g["ColumnAmountO3"][...]; o3[idx] = 88.0; g["ColumnAmountO3"][...] = o3
+        if quality is not None:
+            q = g["QualityFlags"][...]; q[idx] = quality; g["QualityFlags"][...] = q
+        if xtrack is not None:
+            x = np.zeros(la.shape, dtype=np.uint8); x[idx] = xtrack
+            g.create_dataset("XTrackQualityFlags", data=x)
+    return path
+
+
+@pytest.mark.parametrize("quality,xtrack", [(7, None), (65535, None), (3, None), (0, 113)])
+def test_flagged_observations_are_ignored(tmp_path, quality, xtrack):
+    """A skipped (code 7), missing (fill), poor (code 3) or row-anomaly reading must never be shown,
+    even when it is the closest one: on 1 Nov 2026 such a reading put 88 DU over Hyderabad."""
+    nasa_service._points_cache.clear()
+    path = _poison_nearest(_build(tmp_path / "g.he5"), 17.385, 78.4867, quality, xtrack)
+    value, distance, _ = nasa_service._nearest_ozone(path, 17.385, 78.4867)
+    assert value == pytest.approx(_expected(17.385), abs=2.0)    # the next good reading, not 88 DU
+    assert distance < 0.5
+
+
+def test_good_quality_codes_are_kept(tmp_path):
+    nasa_service._points_cache.clear()
+    path = _poison_nearest(_build(tmp_path / "g.he5"), 17.385, 78.4867, quality=1)   # 1 = glint-corrected, still good
+    value, _, _ = nasa_service._nearest_ozone(path, 17.385, 78.4867)
+    assert value == pytest.approx(88.0)
+
+
+# ------------------------------------------------------------------ earlier-pass fallback and cache clean-up
+def _day_name(days_ago):
+    d = datetime.now(timezone.utc) - timedelta(days=days_ago)
+    return f"OMI-Aura_L2G-OMTO3G_{d:%Y}m{d:%m%d}_v004-test.he5"
+
+
+def _newest_is(monkeypatch, days_ago):
+    d = datetime.now(timezone.utc) - timedelta(days=days_ago)
+    monkeypatch.setattr(nasa_service, "_discover_latest_granule", lambda: {
+        "id": "new", "time_start": f"{d:%Y-%m-%d}T00:00:00.000Z",
+        "url": f"https://example.test/{_day_name(days_ago)}", "granule": "new"})
+
+
+def test_point_missed_today_uses_previous_pass(with_token, monkeypatch):
+    """The satellite covers India in strips; when the newest pass misses a point, an earlier pass
+    (here a day earlier) is used and labelled with its own date."""
+    cache = with_token / "cache"; cache.mkdir()
+    _build(cache / _day_name(3))                                           # yesterday's file: full coverage
+    gap = _build(with_token / "gap.he5", hole=(12, 23, 73, 84))            # today's file: misses Hyderabad
+    _newest_is(monkeypatch, 2)
+    monkeypatch.setattr(nasa_service, "_download_granule", lambda granule, path: shutil.copy(gap, path))
+    r = nasa_service.get_current_ozone(17.385, 78.4867)
+    assert r["status"] == "live" and r["from_earlier_pass"] is True
+    assert r["value"] == pytest.approx(_expected(17.385), abs=1.0)
+    assert r["observation_age_days"] == 3 and "did not cover this point" in r["message"]
+    d = nasa_service.get_current_ozone(28.61, 77.21)                       # Delhi is in today's strip
+    assert d["from_earlier_pass"] is False and d["observation_age_days"] == 2
+
+
+def test_fallback_never_uses_old_files(with_token, monkeypatch):
+    cache = with_token / "cache"; cache.mkdir()
+    _build(cache / _day_name(2 + nasa_service.FALLBACK_DAYS + 1))          # too old for the fallback
+    _build(cache / "OMI-Aura_L2G-OMTO3G_2004m1020_v004-2024m1016t194413.he5")
+    gap = _build(with_token / "gap.he5", hole=(12, 23, 73, 84))
+    _newest_is(monkeypatch, 2)
+    monkeypatch.setattr(nasa_service, "_download_granule", lambda granule, path: shutil.copy(gap, path))
+    r = nasa_service.get_current_ozone(17.385, 78.4867)
+    assert r["status"] == "unavailable" and r["value"] is None
+
+
+def test_old_daily_files_are_deleted(with_token, monkeypatch):
+    cache = with_token / "cache"; cache.mkdir()
+    src = _build(with_token / "src.he5")
+    for days in (3, 4, 5, 6, 7):
+        shutil.copy(src, cache / _day_name(days))
+    shutil.copy(src, cache / "OMI-Aura_L2G-OMTO3G_2004m1020_v004-2024m1016t194413.he5")   # 2004 leftover
+    (cache / "notes.txt").write_text("not a NASA file")                                      # never touched
+    (cache / "half.he5.part").write_text("interrupted download")
+    os.utime(cache / "half.he5.part", (0, 0))                                                # older than a day
+    _newest_is(monkeypatch, 2)
+    monkeypatch.setattr(nasa_service, "_download_granule", lambda granule, path: shutil.copy(src, path))
+    assert nasa_service.get_current_ozone(17.385, 78.4867)["status"] == "live"
+    left = sorted(p.name for p in cache.iterdir())
+    kept = [_day_name(2 + i) for i in range(nasa_service.KEEP_DAILY_FILES)]       # newest + fallback days
+    assert left == sorted(kept + ["notes.txt"])

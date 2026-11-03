@@ -1,0 +1,1203 @@
+{
+  "generated_at": "2026-11-03T07:47:16.086652+00:00",
+  "source": "7 station file(s): Raw_Data_2025_site_119_sirifort_delhi_cpcb_1Hr_28.5533_77.2108.csv, Raw_Data_2025_site_1554_hebbal_bengaluru_kspcb_1Hr_13.0400_77.5900.csv, Raw_Data_2025_site_1558_silk_board_bengaluru_kspcb_1Hr_12.9170_77.6230.csv, Raw_Data_2025_site_293_alandur_bus_depot_chennai_cpcb_1Hr_12.9975_80.2006.csv, Raw_Data_2025_site_309_victoria_kolkata_wbpcb_1Hr_22.5449_88.3425.csv, Raw_Data_2025_site_5598_somajiguda_hyderabad_tspcb_1Hr_17.4289_78.4553.csv, Raw_Data_2025_site_5810_bandra_kurla_complex_mumbai_mpcb_1Hr_19.0565_72.8534.csv",
+  "stations": [
+    {
+      "station": "alandur bus depot chennai cpcb",
+      "latitude": 12.9975,
+      "longitude": 80.2006,
+      "qc": {
+        "rows": 8760,
+        "missing": 1323,
+        "out_of_range": 0,
+        "stuck_sensor": 13
+      },
+      "all": {
+        "n": 7424,
+        "station_mean": 26.042097252155173,
+        "cams_mean": 87.59738685344827,
+        "bias": 61.5552896012931,
+        "mae": 67.54264951508621,
+        "rmse": 75.55816134910533,
+        "r": 0.07162908912367726
+      },
+      "daytime_09_17_ist": {
+        "n": 2470,
+        "station_mean": 30.420255060728746,
+        "cams_mean": 105.11255060728745,
+        "bias": 74.6922955465587,
+        "mae": 77.91736437246963,
+        "rmse": 85.66788196260903,
+        "r": 0.13709891950155312
+      },
+      "night": {
+        "n": 4954,
+        "station_mean": 23.859204683084375,
+        "cams_mean": 78.86455389584174,
+        "bias": 55.005349212757366,
+        "mae": 62.369951554299554,
+        "rmse": 69.97402188495785,
+        "r": -0.017493845299694232
+      },
+      "r_by_cams_shift_hours": {
+        "-1": 0.07136061607202486,
+        "0": 0.07162908912367726,
+        "1": 0.06617445462543027
+      },
+      "average_day_ist": [
+        {
+          "hour": 0,
+          "station": 23.6,
+          "cams": 77.2
+        },
+        {
+          "hour": 1,
+          "station": 23.8,
+          "cams": 75.1
+        },
+        {
+          "hour": 2,
+          "station": 22.4,
+          "cams": 73.0
+        },
+        {
+          "hour": 3,
+          "station": 22.0,
+          "cams": 70.1
+        },
+        {
+          "hour": 4,
+          "station": 22.0,
+          "cams": 66.9
+        },
+        {
+          "hour": 5,
+          "station": 21.7,
+          "cams": 66.7
+        },
+        {
+          "hour": 6,
+          "station": 22.0,
+          "cams": 67.6
+        },
+        {
+          "hour": 7,
+          "station": 23.0,
+          "cams": 69.2
+        },
+        {
+          "hour": 8,
+          "station": 24.8,
+          "cams": 73.6
+        },
+        {
+          "hour": 9,
+          "station": 27.8,
+          "cams": 83.4
+        },
+        {
+          "hour": 10,
+          "station": 30.3,
+          "cams": 95.9
+        },
+        {
+          "hour": 11,
+          "station": 31.5,
+          "cams": 105.6
+        },
+        {
+          "hour": 12,
+          "station": 31.3,
+          "cams": 110.5
+        },
+        {
+          "hour": 13,
+          "station": 31.6,
+          "cams": 112.7
+        },
+        {
+          "hour": 14,
+          "station": 31.6,
+          "cams": 113.2
+        },
+        {
+          "hour": 15,
+          "station": 30.2,
+          "cams": 111.4
+        },
+        {
+          "hour": 16,
+          "station": 29.1,
+          "cams": 107.8
+        },
+        {
+          "hour": 17,
+          "station": 26.3,
+          "cams": 100.7
+        },
+        {
+          "hour": 18,
+          "station": 25.8,
+          "cams": 97.0
+        },
+        {
+          "hour": 19,
+          "station": 26.0,
+          "cams": 91.7
+        },
+        {
+          "hour": 20,
+          "station": 25.4,
+          "cams": 87.1
+        },
+        {
+          "hour": 21,
+          "station": 24.3,
+          "cams": 84.1
+        },
+        {
+          "hour": 22,
+          "station": 24.1,
+          "cams": 81.6
+        },
+        {
+          "hour": 23,
+          "station": 24.4,
+          "cams": 79.4
+        }
+      ],
+      "period_utc": [
+        "2024-12-31T18:00:00+00:00",
+        "2025-12-02T10:00:00+00:00"
+      ]
+    },
+    {
+      "station": "bandra kurla complex mumbai mpcb",
+      "latitude": 19.0565,
+      "longitude": 72.8534,
+      "qc": {
+        "rows": 8760,
+        "missing": 360,
+        "out_of_range": 0,
+        "stuck_sensor": 0
+      },
+      "all": {
+        "n": 8400,
+        "station_mean": 26.570897619047617,
+        "cams_mean": 101.14988095238095,
+        "bias": 74.57898333333333,
+        "mae": 75.19128809523811,
+        "rmse": 91.41063572405669,
+        "r": 0.7158424031459208
+      },
+      "daytime_09_17_ist": {
+        "n": 2806,
+        "station_mean": 51.65048823948682,
+        "cams_mean": 151.1464718460442,
+        "bias": 99.49598360655737,
+        "mae": 99.93544191019244,
+        "rmse": 119.1126972451329,
+        "r": 0.7096905419345171
+      },
+      "night": {
+        "n": 5594,
+        "station_mean": 13.990752592062922,
+        "cams_mean": 76.07114765820522,
+        "bias": 62.080395066142295,
+        "mae": 62.77940114408294,
+        "rmse": 73.6923087204581,
+        "r": 0.4042352701172827
+      },
+      "r_by_cams_shift_hours": {
+        "-1": 0.7440870046948219,
+        "0": 0.7158424031459208,
+        "1": 0.6335864337404119
+      },
+      "average_day_ist": [
+        {
+          "hour": 0,
+          "station": 9.4,
+          "cams": 71.4
+        },
+        {
+          "hour": 1,
+          "station": 10.4,
+          "cams": 68.4
+        },
+        {
+          "hour": 2,
+          "station": 9.2,
+          "cams": 65.4
+        },
+        {
+          "hour": 3,
+          "station": 8.7,
+          "cams": 62.2
+        },
+        {
+          "hour": 4,
+          "station": 7.5,
+          "cams": 59.4
+        },
+        {
+          "hour": 5,
+          "station": 6.3,
+          "cams": 57.1
+        },
+        {
+          "hour": 6,
+          "station": 9.3,
+          "cams": 54.7
+        },
+        {
+          "hour": 7,
+          "station": 14.7,
+          "cams": 52.4
+        },
+        {
+          "hour": 8,
+          "station": 20.5,
+          "cams": 59.6
+        },
+        {
+          "hour": 9,
+          "station": 30.7,
+          "cams": 83.6
+        },
+        {
+          "hour": 10,
+          "station": 42.9,
+          "cams": 116.8
+        },
+        {
+          "hour": 11,
+          "station": 53.4,
+          "cams": 145.7
+        },
+        {
+          "hour": 12,
+          "station": 62.1,
+          "cams": 166.9
+        },
+        {
+          "hour": 13,
+          "station": 62.1,
+          "cams": 182.4
+        },
+        {
+          "hour": 14,
+          "station": 59.1,
+          "cams": 188.7
+        },
+        {
+          "hour": 15,
+          "station": 55.1,
+          "cams": 174.5
+        },
+        {
+          "hour": 16,
+          "station": 48.1,
+          "cams": 151.7
+        },
+        {
+          "hour": 17,
+          "station": 37.8,
+          "cams": 127.7
+        },
+        {
+          "hour": 18,
+          "station": 28.8,
+          "cams": 116.5
+        },
+        {
+          "hour": 19,
+          "station": 20.2,
+          "cams": 100.6
+        },
+        {
+          "hour": 20,
+          "station": 13.3,
+          "cams": 87.4
+        },
+        {
+          "hour": 21,
+          "station": 9.8,
+          "cams": 80.8
+        },
+        {
+          "hour": 22,
+          "station": 8.5,
+          "cams": 77.7
+        },
+        {
+          "hour": 23,
+          "station": 9.1,
+          "cams": 75.1
+        }
+      ],
+      "period_utc": [
+        "2024-12-31T18:00:00+00:00",
+        "2025-12-31T17:00:00+00:00"
+      ]
+    },
+    {
+      "station": "hebbal bengaluru kspcb",
+      "latitude": 13.04,
+      "longitude": 77.59,
+      "qc": {
+        "rows": 8760,
+        "missing": 467,
+        "out_of_range": 0,
+        "stuck_sensor": 0
+      },
+      "all": {
+        "n": 8293,
+        "station_mean": 11.881330037380923,
+        "cams_mean": 73.72796334257808,
+        "bias": 61.84663330519715,
+        "mae": 61.9659049801037,
+        "rmse": 71.00487475677886,
+        "r": 0.4738506748174722
+      },
+      "daytime_09_17_ist": {
+        "n": 2771,
+        "station_mean": 17.989888127029953,
+        "cams_mean": 102.55575604474919,
+        "bias": 84.56586791771922,
+        "mae": 84.74314687838326,
+        "rmse": 92.27918850520999,
+        "r": 0.48065510057647953
+      },
+      "night": {
+        "n": 5522,
+        "station_mean": 8.81598877218399,
+        "cams_mean": 59.261861644331766,
+        "bias": 50.44587287214777,
+        "mae": 50.536035856573704,
+        "rmse": 57.43277187779485,
+        "r": 0.25666994896727735
+      },
+      "r_by_cams_shift_hours": {
+        "-1": 0.477857845600865,
+        "0": 0.4738506748174722,
+        "1": 0.44060827694205384
+      },
+      "average_day_ist": [
+        {
+          "hour": 0,
+          "station": 8.5,
+          "cams": 54.1
+        },
+        {
+          "hour": 1,
+          "station": 8.5,
+          "cams": 55.0
+        },
+        {
+          "hour": 2,
+          "station": 8.6,
+          "cams": 55.4
+        },
+        {
+          "hour": 3,
+          "station": 8.4,
+          "cams": 54.6
+        },
+        {
+          "hour": 4,
+          "station": 8.1,
+          "cams": 53.1
+        },
+        {
+          "hour": 5,
+          "station": 8.0,
+          "cams": 53.4
+        },
+        {
+          "hour": 6,
+          "station": 7.8,
+          "cams": 55.7
+        },
+        {
+          "hour": 7,
+          "station": 8.2,
+          "cams": 59.2
+        },
+        {
+          "hour": 8,
+          "station": 10.7,
+          "cams": 65.8
+        },
+        {
+          "hour": 9,
+          "station": 14.1,
+          "cams": 78.7
+        },
+        {
+          "hour": 10,
+          "station": 16.1,
+          "cams": 94.6
+        },
+        {
+          "hour": 11,
+          "station": 20.8,
+          "cams": 106.5
+        },
+        {
+          "hour": 12,
+          "station": 22.6,
+          "cams": 111.4
+        },
+        {
+          "hour": 13,
+          "station": 19.8,
+          "cams": 111.9
+        },
+        {
+          "hour": 14,
+          "station": 18.6,
+          "cams": 110.2
+        },
+        {
+          "hour": 15,
+          "station": 17.2,
+          "cams": 106.6
+        },
+        {
+          "hour": 16,
+          "station": 14.7,
+          "cams": 100.3
+        },
+        {
+          "hour": 17,
+          "station": 12.1,
+          "cams": 91.6
+        },
+        {
+          "hour": 18,
+          "station": 10.0,
+          "cams": 79.9
+        },
+        {
+          "hour": 19,
+          "station": 8.9,
+          "cams": 64.0
+        },
+        {
+          "hour": 20,
+          "station": 8.3,
+          "cams": 52.3
+        },
+        {
+          "hour": 21,
+          "station": 8.2,
+          "cams": 49.6
+        },
+        {
+          "hour": 22,
+          "station": 8.3,
+          "cams": 51.3
+        },
+        {
+          "hour": 23,
+          "station": 8.5,
+          "cams": 53.2
+        }
+      ],
+      "period_utc": [
+        "2024-12-31T22:00:00+00:00",
+        "2025-12-31T17:00:00+00:00"
+      ]
+    },
+    {
+      "station": "silk board bengaluru kspcb",
+      "latitude": 12.917,
+      "longitude": 77.623,
+      "qc": {
+        "rows": 8760,
+        "missing": 1052,
+        "out_of_range": 0,
+        "stuck_sensor": 24
+      },
+      "all": {
+        "n": 7684,
+        "station_mean": 22.157764185320147,
+        "cams_mean": 72.09877667881312,
+        "bias": 49.94101249349297,
+        "mae": 51.11565590838105,
+        "rmse": 62.52477731626659,
+        "r": 0.34413238802867
+      },
+      "daytime_09_17_ist": {
+        "n": 2580,
+        "station_mean": 26.236046511627908,
+        "cams_mean": 102.5531007751938,
+        "bias": 76.3170542635659,
+        "mae": 76.33326356589147,
+        "rmse": 85.58169728982799,
+        "r": 0.4341866416217809
+      },
+      "night": {
+        "n": 5104,
+        "station_mean": 20.09625,
+        "cams_mean": 56.70454545454545,
+        "bias": 36.608295454545456,
+        "mae": 38.36851097178683,
+        "rmse": 46.724453439460376,
+        "r": 0.08016959762323768
+      },
+      "r_by_cams_shift_hours": {
+        "-1": 0.3521594751968679,
+        "0": 0.34413238802867,
+        "1": 0.31626934640188464
+      },
+      "average_day_ist": [
+        {
+          "hour": 0,
+          "station": 20.8,
+          "cams": 52.3
+        },
+        {
+          "hour": 1,
+          "station": 20.5,
+          "cams": 54.1
+        },
+        {
+          "hour": 2,
+          "station": 20.1,
+          "cams": 55.3
+        },
+        {
+          "hour": 3,
+          "station": 19.3,
+          "cams": 55.0
+        },
+        {
+          "hour": 4,
+          "station": 18.3,
+          "cams": 54.0
+        },
+        {
+          "hour": 5,
+          "station": 17.6,
+          "cams": 53.0
+        },
+        {
+          "hour": 6,
+          "station": 18.1,
+          "cams": 54.4
+        },
+        {
+          "hour": 7,
+          "station": 19.6,
+          "cams": 57.3
+        },
+        {
+          "hour": 8,
+          "station": 21.4,
+          "cams": 63.3
+        },
+        {
+          "hour": 9,
+          "station": 23.2,
+          "cams": 75.7
+        },
+        {
+          "hour": 10,
+          "station": 27.2,
+          "cams": 93.9
+        },
+        {
+          "hour": 11,
+          "station": 28.3,
+          "cams": 106.9
+        },
+        {
+          "hour": 12,
+          "station": 28.9,
+          "cams": 112.8
+        },
+        {
+          "hour": 13,
+          "station": 28.1,
+          "cams": 113.5
+        },
+        {
+          "hour": 14,
+          "station": 26.7,
+          "cams": 112.5
+        },
+        {
+          "hour": 15,
+          "station": 24.7,
+          "cams": 107.3
+        },
+        {
+          "hour": 16,
+          "station": 22.7,
+          "cams": 98.6
+        },
+        {
+          "hour": 17,
+          "station": 21.1,
+          "cams": 87.3
+        },
+        {
+          "hour": 18,
+          "station": 20.4,
+          "cams": 74.7
+        },
+        {
+          "hour": 19,
+          "station": 20.7,
+          "cams": 58.1
+        },
+        {
+          "hour": 20,
+          "station": 20.4,
+          "cams": 46.3
+        },
+        {
+          "hour": 21,
+          "station": 20.8,
+          "cams": 44.1
+        },
+        {
+          "hour": 22,
+          "station": 21.0,
+          "cams": 47.3
+        },
+        {
+          "hour": 23,
+          "station": 20.9,
+          "cams": 51.0
+        }
+      ],
+      "period_utc": [
+        "2024-12-31T18:00:00+00:00",
+        "2025-12-31T17:00:00+00:00"
+      ]
+    },
+    {
+      "station": "sirifort delhi cpcb",
+      "latitude": 28.5533,
+      "longitude": 77.2108,
+      "qc": {
+        "rows": 8760,
+        "missing": 71,
+        "out_of_range": 0,
+        "stuck_sensor": 0
+      },
+      "all": {
+        "n": 8689,
+        "station_mean": 26.238387616526648,
+        "cams_mean": 91.37173437679824,
+        "bias": 65.1333467602716,
+        "mae": 68.78042237311544,
+        "rmse": 86.4167415114328,
+        "r": 0.2925594848894998
+      },
+      "daytime_09_17_ist": {
+        "n": 2890,
+        "station_mean": 31.56006574394464,
+        "cams_mean": 153.07750865051904,
+        "bias": 121.5174429065744,
+        "mae": 122.85143598615917,
+        "rmse": 129.69103617516075,
+        "r": 0.1862615773123447
+      },
+      "night": {
+        "n": 5799,
+        "station_mean": 23.58626659768926,
+        "cams_mean": 60.619934471460596,
+        "bias": 37.03366787377134,
+        "mae": 41.83349543024659,
+        "rmse": 52.98318427449227,
+        "r": 0.2690363385315249
+      },
+      "r_by_cams_shift_hours": {
+        "-1": 0.27146331388297856,
+        "0": 0.2925594848894998,
+        "1": 0.2991777689979777
+      },
+      "average_day_ist": [
+        {
+          "hour": 0,
+          "station": 22.7,
+          "cams": 46.7
+        },
+        {
+          "hour": 1,
+          "station": 22.4,
+          "cams": 48.2
+        },
+        {
+          "hour": 2,
+          "station": 22.3,
+          "cams": 49.1
+        },
+        {
+          "hour": 3,
+          "station": 22.2,
+          "cams": 48.0
+        },
+        {
+          "hour": 4,
+          "station": 22.4,
+          "cams": 46.3
+        },
+        {
+          "hour": 5,
+          "station": 23.4,
+          "cams": 48.7
+        },
+        {
+          "hour": 6,
+          "station": 22.1,
+          "cams": 50.2
+        },
+        {
+          "hour": 7,
+          "station": 22.3,
+          "cams": 53.5
+        },
+        {
+          "hour": 8,
+          "station": 23.0,
+          "cams": 65.1
+        },
+        {
+          "hour": 9,
+          "station": 23.6,
+          "cams": 93.0
+        },
+        {
+          "hour": 10,
+          "station": 24.4,
+          "cams": 130.0
+        },
+        {
+          "hour": 11,
+          "station": 25.5,
+          "cams": 158.1
+        },
+        {
+          "hour": 12,
+          "station": 31.0,
+          "cams": 172.1
+        },
+        {
+          "hour": 13,
+          "station": 36.5,
+          "cams": 177.5
+        },
+        {
+          "hour": 14,
+          "station": 39.9,
+          "cams": 175.9
+        },
+        {
+          "hour": 15,
+          "station": 37.4,
+          "cams": 167.1
+        },
+        {
+          "hour": 16,
+          "station": 34.3,
+          "cams": 151.1
+        },
+        {
+          "hour": 17,
+          "station": 28.7,
+          "cams": 129.2
+        },
+        {
+          "hour": 18,
+          "station": 25.4,
+          "cams": 108.5
+        },
+        {
+          "hour": 19,
+          "station": 24.3,
+          "cams": 78.8
+        },
+        {
+          "hour": 20,
+          "station": 24.9,
+          "cams": 56.4
+        },
+        {
+          "hour": 21,
+          "station": 24.3,
+          "cams": 48.4
+        },
+        {
+          "hour": 22,
+          "station": 23.9,
+          "cams": 47.0
+        },
+        {
+          "hour": 23,
+          "station": 23.3,
+          "cams": 46.5
+        }
+      ],
+      "period_utc": [
+        "2024-12-31T18:00:00+00:00",
+        "2025-12-31T17:00:00+00:00"
+      ]
+    },
+    {
+      "station": "somajiguda hyderabad tspcb",
+      "latitude": 17.4289,
+      "longitude": 78.4553,
+      "qc": {
+        "rows": 8760,
+        "missing": 895,
+        "out_of_range": 0,
+        "stuck_sensor": 280
+      },
+      "all": {
+        "n": 7585,
+        "station_mean": 24.629179960448255,
+        "cams_mean": 91.92050098879368,
+        "bias": 67.29132102834542,
+        "mae": 67.35954515491099,
+        "rmse": 76.60233568324925,
+        "r": 0.5164217153681386
+      },
+      "daytime_09_17_ist": {
+        "n": 2669,
+        "station_mean": 32.583825402772575,
+        "cams_mean": 123.44248782315474,
+        "bias": 90.85866242038217,
+        "mae": 90.92597602098164,
+        "rmse": 98.71492860479226,
+        "r": 0.4324559278671167
+      },
+      "night": {
+        "n": 4916,
+        "station_mean": 20.310435313262815,
+        "cams_mean": 74.80655004068348,
+        "bias": 54.496114727420675,
+        "mae": 54.56483319772172,
+        "rmse": 61.344643021712585,
+        "r": 0.21996307861016637
+      },
+      "r_by_cams_shift_hours": {
+        "-1": 0.5334792758743462,
+        "0": 0.5164217153681386,
+        "1": 0.46745008576131014
+      },
+      "average_day_ist": [
+        {
+          "hour": 0,
+          "station": 20.0,
+          "cams": 67.0
+        },
+        {
+          "hour": 1,
+          "station": 20.0,
+          "cams": 68.1
+        },
+        {
+          "hour": 2,
+          "station": 19.7,
+          "cams": 68.8
+        },
+        {
+          "hour": 3,
+          "station": 19.2,
+          "cams": 67.5
+        },
+        {
+          "hour": 4,
+          "station": 18.1,
+          "cams": 65.6
+        },
+        {
+          "hour": 5,
+          "station": 17.4,
+          "cams": 66.7
+        },
+        {
+          "hour": 6,
+          "station": 18.2,
+          "cams": 68.8
+        },
+        {
+          "hour": 7,
+          "station": 20.6,
+          "cams": 71.8
+        },
+        {
+          "hour": 8,
+          "station": 24.9,
+          "cams": 79.5
+        },
+        {
+          "hour": 9,
+          "station": 29.8,
+          "cams": 93.9
+        },
+        {
+          "hour": 10,
+          "station": 32.8,
+          "cams": 113.2
+        },
+        {
+          "hour": 11,
+          "station": 33.5,
+          "cams": 128.4
+        },
+        {
+          "hour": 12,
+          "station": 33.8,
+          "cams": 134.0
+        },
+        {
+          "hour": 13,
+          "station": 34.4,
+          "cams": 134.1
+        },
+        {
+          "hour": 14,
+          "station": 34.1,
+          "cams": 132.0
+        },
+        {
+          "hour": 15,
+          "station": 32.5,
+          "cams": 128.6
+        },
+        {
+          "hour": 16,
+          "station": 29.7,
+          "cams": 122.7
+        },
+        {
+          "hour": 17,
+          "station": 25.3,
+          "cams": 113.6
+        },
+        {
+          "hour": 18,
+          "station": 21.8,
+          "cams": 101.3
+        },
+        {
+          "hour": 19,
+          "station": 20.5,
+          "cams": 83.8
+        },
+        {
+          "hour": 20,
+          "station": 20.1,
+          "cams": 70.7
+        },
+        {
+          "hour": 21,
+          "station": 19.6,
+          "cams": 66.3
+        },
+        {
+          "hour": 22,
+          "station": 19.3,
+          "cams": 66.1
+        },
+        {
+          "hour": 23,
+          "station": 19.7,
+          "cams": 66.6
+        }
+      ],
+      "period_utc": [
+        "2024-12-31T18:00:00+00:00",
+        "2025-12-31T17:00:00+00:00"
+      ]
+    },
+    {
+      "station": "victoria kolkata wbpcb",
+      "latitude": 22.5449,
+      "longitude": 88.3425,
+      "qc": {
+        "rows": 8760,
+        "missing": 254,
+        "out_of_range": 0,
+        "stuck_sensor": 0
+      },
+      "all": {
+        "n": 8506,
+        "station_mean": 25.88431225017635,
+        "cams_mean": 89.54244063014343,
+        "bias": 63.65812837996709,
+        "mae": 63.91597930872326,
+        "rmse": 77.0231587566866,
+        "r": 0.6822946627172913
+      },
+      "daytime_09_17_ist": {
+        "n": 2836,
+        "station_mean": 41.668078279266574,
+        "cams_mean": 143.78102961918194,
+        "bias": 102.11295133991536,
+        "mae": 102.21928420310297,
+        "rmse": 111.00424058581024,
+        "r": 0.5404896315847076
+      },
+      "night": {
+        "n": 5670,
+        "station_mean": 17.989645502645505,
+        "cams_mean": 62.41358024691358,
+        "bias": 44.42393474426808,
+        "mae": 44.757571428571424,
+        "rmse": 52.31398368955379,
+        "r": 0.3372318972174537
+      },
+      "r_by_cams_shift_hours": {
+        "-1": 0.7076994530309881,
+        "0": 0.6822946627172913,
+        "1": 0.6032806675544115
+      },
+      "average_day_ist": [
+        {
+          "hour": 0,
+          "station": 15.1,
+          "cams": 49.6
+        },
+        {
+          "hour": 1,
+          "station": 14.5,
+          "cams": 49.3
+        },
+        {
+          "hour": 2,
+          "station": 14.4,
+          "cams": 48.7
+        },
+        {
+          "hour": 3,
+          "station": 14.7,
+          "cams": 45.6
+        },
+        {
+          "hour": 4,
+          "station": 15.2,
+          "cams": 42.6
+        },
+        {
+          "hour": 5,
+          "station": 15.6,
+          "cams": 46.4
+        },
+        {
+          "hour": 6,
+          "station": 18.2,
+          "cams": 57.6
+        },
+        {
+          "hour": 7,
+          "station": 23.2,
+          "cams": 73.9
+        },
+        {
+          "hour": 8,
+          "station": 30.1,
+          "cams": 92.0
+        },
+        {
+          "hour": 9,
+          "station": 35.7,
+          "cams": 113.2
+        },
+        {
+          "hour": 10,
+          "station": 40.2,
+          "cams": 135.6
+        },
+        {
+          "hour": 11,
+          "station": 44.4,
+          "cams": 153.0
+        },
+        {
+          "hour": 12,
+          "station": 48.8,
+          "cams": 159.5
+        },
+        {
+          "hour": 13,
+          "station": 50.7,
+          "cams": 160.3
+        },
+        {
+          "hour": 14,
+          "station": 48.2,
+          "cams": 156.6
+        },
+        {
+          "hour": 15,
+          "station": 38.5,
+          "cams": 145.4
+        },
+        {
+          "hour": 16,
+          "station": 27.4,
+          "cams": 127.6
+        },
+        {
+          "hour": 17,
+          "station": 22.0,
+          "cams": 105.3
+        },
+        {
+          "hour": 18,
+          "station": 18.9,
+          "cams": 92.3
+        },
+        {
+          "hour": 19,
+          "station": 17.6,
+          "cams": 74.8
+        },
+        {
+          "hour": 20,
+          "station": 17.3,
+          "cams": 60.9
+        },
+        {
+          "hour": 21,
+          "station": 17.5,
+          "cams": 54.9
+        },
+        {
+          "hour": 22,
+          "station": 17.1,
+          "cams": 52.2
+        },
+        {
+          "hour": 23,
+          "station": 15.9,
+          "cams": 50.7
+        }
+      ],
+      "period_utc": [
+        "2024-12-31T18:00:00+00:00",
+        "2025-12-31T17:00:00+00:00"
+      ]
+    }
+  ],
+  "overall": {
+    "n": 56581,
+    "station_mean": 23.33457945246637,
+    "cams_mean": 86.92333115356745,
+    "bias": 63.58875170110107,
+    "mae": 65.25024230748838,
+    "rmse": 78.00493987622114,
+    "r": 0.47405137650479595
+  },
+  "notes": {
+    "cams_grid_km": 45,
+    "units": "\u00b5g/m\u00b3",
+    "bias": "CAMS minus station (positive = CAMS reads higher)"
+  }
+}

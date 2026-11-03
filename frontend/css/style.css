@@ -256,8 +256,6 @@ tbody tr:hover td { background: #f7f8fc; }
 /* ------------------------------------------------------------------ account + save actions */
 .acct { display: inline-flex; align-items: center; gap: 8px; margin-left: 8px; }
 .acct .btn { min-height: 38px; padding: 7px 14px; font-size: .875rem; }
-.acct-name { display: inline-flex; align-items: center; gap: 6px; max-width: 170px; overflow: hidden; color: var(--ink); font-size: .9rem; font-weight: 600; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; }
-.acct-name svg { width: 16px; height: 16px; flex: none; color: var(--ozone); }
 .place-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 16px; }
 .save-msg { color: var(--muted); font-size: .875rem; font-weight: 500; }
 .save-msg.ok { color: var(--ok); }
@@ -307,7 +305,6 @@ footer a:not(.logo):hover { color: #fff; text-decoration: underline; }
   .links a.on::after { top: 10px; right: auto; bottom: 10px; left: -2px; width: 2px; height: auto; }
   .grp { flex-direction: column; align-items: stretch; gap: 0; margin: 0; padding: 0; border: 0; }
   .acct { flex-direction: column; align-items: stretch; margin: 12px 0 0; }
-  .acct-name { max-width: none; padding: 8px; }
   .page-h .wrap { grid-template-columns: 1fr; }
   .page-h .tense { justify-self: start; }
   .picker { grid-template-columns: 1fr; }

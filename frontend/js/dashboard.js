@@ -57,7 +57,14 @@
   }
 
   /* ---------------------------------------------------------------- saved locations */
+  /* Header greeting: "Hello, Rohith" when signed in, "Your overview" otherwise. */
+  function greet() {
+    const name = accountName(OGAccount.user);
+    $('#greet').textContent = name ? `Hello, ${name}` : 'Your overview';
+  }
+
   function renderSaved() {
+    greet();
     const box = $('#saved'), user = OGAccount.user;
     $('#saved-where').innerHTML = user
       ? `Signed in as <b>${escHtml(user.displayName || user.email)}</b>. These are stored in your account.`

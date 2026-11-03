@@ -112,15 +112,18 @@ function layout() {
   if (window.OGAccount) OGAccount.onUser(renderAccount);
 }
 
-/* Nav account area: "Sign in" when signed out, name + "Sign out" when signed in. */
+/* The signed-in person's first name for greetings (falls back to the part of the email before @). */
+const accountName = user => ((user && (user.displayName || (user.email || '').split('@')[0])) || '').trim();
+
+/* Nav account area: "Sign in" when signed out, "Sign out" when signed in.
+ * The person's name is shown on the Dashboard, not in the menu. */
 function renderAccount(user) {
   const box = $('#acct');
   if (!box) return;
   if (!user) {
     box.innerHTML = '<a class="btn" href="login.html">Sign in</a>';
   } else {
-    const name = user.displayName || (user.email || '').split('@')[0] || 'Account';
-    box.innerHTML = `<a class="acct-name" href="dashboard.html" title="${escHtml(user.email || '')}"><i data-lucide="user-round"></i>${escHtml(name)}</a><button class="btn ghost" type="button" id="signout">Sign out</button>`;
+    box.innerHTML = `<button class="btn ghost" type="button" id="signout" title="Signed in as ${escHtml(user.email || accountName(user))}">Sign out</button>`;
     $('#signout').addEventListener('click', async () => { try { await OGAccount.signOut(); } catch (e) { console.error(e); } });
   }
   window.lucide && lucide.createIcons();

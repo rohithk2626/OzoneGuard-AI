@@ -21,7 +21,7 @@ Nothing here stops the prediction system from working. Each item would *improve*
 * **EXACT BLOCKER:** free OpenAQ account + key.
 * **ALTERNATIVES:** manual CSV download from the CPCB CCR portal (airquality.cpcb.gov.in/ccr).
 * **WHAT I MUST DO / STEPS:** 1) https://explore.openaq.org → sign up. 2) Account settings → API key. 3) add `OPENAQ_API_KEY=<key>` to `.env`.
-* **COMMAND TO RUN AFTERWARD:** `python -m ml.validate_ground_truth openaq --start 2026-01-01 --end 2026-03-31` (or, with CSVs downloaded from CPCB: `python -m ml.validate_ground_truth csv data/external/stations/*.csv`). Writes `docs/ground-truth-validation.md`. The OpenAQ downloader has not been run against the live service yet.
+* **COMMAND TO RUN AFTERWARD:** `python -m ml.validate_ground_truth openaq --start 2026-01-01 --end 2026-03-31` (or, with Excel/CSV files downloaded from CPCB: `python -m ml.validate_ground_truth csv data/external/stations`). Writes `docs/ground-truth-validation.md`. The OpenAQ downloader has not been run against the live service yet.
 
 ## 3. Copernicus Atmosphere Data Store (ADS) key
 

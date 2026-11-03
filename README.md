@@ -14,7 +14,7 @@
   <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white">
   <img alt="FastAPI" src="https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white">
   <img alt="Models: XGBoost and LSTM" src="https://img.shields.io/badge/models-XGBoost%20%7C%20LSTM-2e43b8">
-  <img alt="99 tests" src="https://img.shields.io/badge/tests-99%20passing-2e7d32">
+  <img alt="114 tests" src="https://img.shields.io/badge/tests-114%20passing-2e7d32">
   <img alt="Coverage: India" src="https://img.shields.io/badge/coverage-India-138808">
 </p>
 
@@ -103,7 +103,22 @@ The training data has 1.39 million hourly rows from 38 places across all six reg
 
 The LSTM is slightly better for the places it was trained on and for the first few hours. XGBoost is slightly better for new places, which is why it is the default.
 
-**What to keep in mind.** The models learn to reproduce CAMS, the European atmospheric model, which works on a grid of roughly 45 km. That means the forecasts describe the area around a point, not a single street, and they have not yet been compared with readings from ground monitoring stations. The [limitations page](docs/scientific-limitations.md) explains this in more detail.
+### How close is it to real measurements?
+
+The models learn to reproduce CAMS, the European atmospheric model, which works on a grid of roughly 45 km. To see how CAMS itself compares with the air people breathe, it was checked against a full year (2025) of hourly readings from seven CPCB monitoring stations in all six model cities: 56,581 matched hours.
+
+| | Ground stations | CAMS |
+|---|---:|---:|
+| Average ozone | 23 µg/m³ | 87 µg/m³ |
+| Afternoon peak (average day) | 23–62 µg/m³, around 1 pm | 112–189 µg/m³, around 1–2 pm |
+
+- **The timing is right.** At every station both peak in the early afternoon and fall at night, and at most stations the hour-by-hour readings move together (correlation 0.47–0.72 in Mumbai, Kolkata, Hyderabad and Hebbal in Bengaluru; weaker at Silk Board, in Delhi and in Chennai).
+- **The level is not.** CAMS reads about **3.7 times higher** than the stations, an average gap of 64 µg/m³. A published comparison of reanalysis data with CPCB stations reports the same: CAMS overestimating by 42–108 µg/m³ ([Earth Systems and Environment, 2025](https://link.springer.com/article/10.1007/s42865-025-00109-x)).
+- **Why.** A station measures one street, often next to traffic, whose exhaust destroys ozone locally; CAMS describes a 45 km square. The rest comes from the model's chemistry and emissions over India.
+
+So the forecasts are good for **when** ozone and UV are highest and for comparing places and days, but the ozone **numbers** are on the CAMS scale, several times what a nearby CPCB station would report. UV could not be checked this way: India has no public ground UV network.
+
+Full results: [ground-truth report](docs/ground-truth-validation.md); more caveats on the [limitations page](docs/scientific-limitations.md).
 
 ## Getting started
 
@@ -246,10 +261,10 @@ python -m ml.collect_data import-export data/raw/browser_export/ozoneguard_train
 
 PyTorch is only needed to train the LSTM. The website runs it with plain NumPy.
 
-To check the forecasts against real monitoring stations, put hourly station files in `data/external/stations/` (CPCB exports work) or use an OpenAQ API key:
+To check the forecasts against real monitoring stations, put hourly station files in `data/external/stations/` (CPCB data-repository downloads work as they are; add the station's latitude and longitude to the end of each file name, e.g. `Raw_Data_2025_site_298_zoo_park_hyderabad_tspcb_1Hr_17.3496_78.4512.csv`) or use an OpenAQ API key:
 
 ```bash
-python -m ml.validate_ground_truth csv data/external/stations/*.csv
+python -m ml.validate_ground_truth csv data/external/stations
 python -m ml.validate_ground_truth openaq --start 2026-01-01 --end 2026-03-31
 ```
 
@@ -259,7 +274,7 @@ python -m ml.validate_ground_truth openaq --start 2026-01-01 --end 2026-03-31
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The 99 tests cover data cleaning and features, both models, the India boundary, the API, the NASA reader, the station check and the error messages. They run offline, using the small sample in `data/samples/`.
+The 114 tests cover data cleaning and features, both models, the India boundary, the API, the NASA reader, the station check and the error messages. They run offline, using the small sample in `data/samples/`.
 
 ## Accounts (optional)
 

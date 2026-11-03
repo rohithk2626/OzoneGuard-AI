@@ -1,4 +1,6 @@
 /* Dashboard: place heading, saved locations and onward links. */
+/* "Hello, <name>" above the page title: one step smaller than the title on every screen size. */
+#greet { margin-bottom: 6px; font-size: clamp(1.5rem, 2.5vw, 2rem); line-height: 1.2; letter-spacing: -.015em; }
 .dash-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 24px; margin-bottom: 20px; }
 .dash-head h2 { font-size: 1.75rem; }
 .dash-head .place-actions { margin-top: 0; }

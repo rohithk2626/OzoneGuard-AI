@@ -9,8 +9,10 @@ from __future__ import annotations
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any
+import logging
 import math
 import os
+import re
 import time
 
 import h5py
@@ -28,13 +30,26 @@ NASA_DATASET_URL = "https://data.nasa.gov/dataset/omi-aura-ozone-o3-total-column
 
 MAX_FRESH_DAYS = 10             # satellite files normally arrive within a few days; older is labelled "stale"
 MAX_DISTANCE_DEGREES = 1.5     # about 165 km; beyond this the "nearest" observation is not this place
+FALLBACK_DAYS = 3              # if the newest daily pass misses a point, look up to this many days earlier
+KEEP_DAILY_FILES = FALLBACK_DAYS + 1   # newest + the fallback days, about 150 MB each; older files are deleted
+
+log = logging.getLogger("ozoneguard.nasa")
+_FILE_DATE = re.compile(r"OMTO3G_(\d{4})m(\d{2})(\d{2})", re.IGNORECASE)   # e.g. ..._OMTO3G_2026m1101_...
 
 _TARGETS = {
     "ozone": ("columnamounto3", "columnamounto3corrected"),
     "lat": ("latitude",),
     "lon": ("longitude",),
     "quality": ("qualityflags", "qualityflag", "quality_flags"),
+    "xtrack": ("xtrackqualityflags",),
 }
+
+# OMTO3 QualityFlags: the lowest 4 bits hold a quality code. 0 = good sample, 1 = good but sun-glint
+# corrected; higher codes are poor or failed retrievals, and 7 means the sample was skipped (its ozone
+# value is meaningless, e.g. 88 DU over Hyderabad on 1 Nov 2026). The fill value 65535 gives code 15.
+GOOD_QUALITY_CODES = (0, 1)
+# XTrackQualityFlags: 0 = this detector row is not affected by the OMI "row anomaly"; anything else
+# (including the fill value 255) is a row NASA warns against using.
 
 
 def _base_metadata(lat: float, lon: float) -> dict[str, Any]:
@@ -218,20 +233,74 @@ def _get_cached_granule() -> tuple[Path, dict[str, Any]]:
     stale = path.exists() and datetime.now(timezone.utc) - datetime.fromtimestamp(path.stat().st_mtime, timezone.utc) > max_age
     if not path.exists() or stale or not h5py.is_hdf5(path):
         _download_granule(granule, path)
+    _prune_cache(keep=path)
     return path, granule
+
+
+# ------------------------------------------------------------------ cached daily files
+def _file_date(path: Path) -> datetime | None:
+    """Observation date of a daily OMTO3G file, read from its name (…_OMTO3G_2026m1101_…)."""
+    m = _FILE_DATE.search(path.name)
+    if not m:
+        return None
+    try:
+        return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)), tzinfo=timezone.utc)
+    except ValueError:
+        return None
+
+
+def _cached_files() -> list[Path]:
+    """Daily OMTO3G files in the cache folder, newest observation date first."""
+    cache = Path(settings.nasa_cache_dir)
+    if not cache.is_dir():
+        return []
+    dated = [(d, p) for p in cache.glob("*.he5") if (d := _file_date(p)) is not None]
+    return [p for _, p in sorted(dated, key=lambda dp: dp[0], reverse=True)]
+
+
+def _prune_cache(keep: Path) -> None:
+    """Keep the newest KEEP_DAILY_FILES daily files (and always `keep`); delete older ones and leftovers
+    of interrupted downloads. Only OMTO3G files in the NASA cache folder are ever touched."""
+    for old in _cached_files()[KEEP_DAILY_FILES:]:
+        if old.resolve() == keep.resolve():
+            continue
+        try:
+            old.unlink()
+            _points_cache.pop(str(old), None)
+            log.info("deleted old NASA file %s", old.name)
+        except OSError as exc:                      # e.g. the file is open elsewhere: try again next time
+            log.warning("could not delete old NASA file %s: %s", old.name, exc)
+    cutoff = time.time() - 24 * 3600
+    for part in Path(settings.nasa_cache_dir).glob("*.he5.part"):
+        try:
+            if part.stat().st_mtime < cutoff:
+                part.unlink()
+        except OSError:
+            pass
+
+
+def _earlier_files(newest: Path) -> list[Path]:
+    """Cached daily files from up to FALLBACK_DAYS before `newest`, most recent first."""
+    top = _file_date(newest)
+    if top is None:
+        return []
+    return [p for p in _cached_files()
+            if (d := _file_date(p)) is not None and timedelta(0) < top - d <= timedelta(days=FALLBACK_DAYS)]
 
 
 # Observations kept in memory: India plus a margin. The global file holds ~15 million
 # candidate scenes; this keeps a few tens of thousands and makes later requests instant.
+# One entry per daily file (newest plus the fallback days), keyed by file path.
 _REGION = (-2.0, 45.0, 58.0, 107.0)          # lat_min, lat_max, lon_min, lon_max
-_points_cache: dict[str, Any] = {"key": None, "value": None}
+_points_cache: dict[str, tuple[Any, Any]] = {}
 
 
 def _region_points(path: Path) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Valid (ozone, lat, lon) observations near India from one granule, cached per file version."""
-    key = (str(path), path.stat().st_mtime_ns)
-    if _points_cache["key"] == key:
-        return _points_cache["value"]
+    version = path.stat().st_mtime_ns
+    hit = _points_cache.get(str(path))
+    if hit and hit[0] == version:
+        return hit[1]
     with h5py.File(path, "r") as h5:
         paths = _dataset_paths(h5)
         missing = [k for k in ("ozone", "lat", "lon") if k not in paths]
@@ -240,19 +309,27 @@ def _region_points(path: Path) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         ozone = _scaled(h5[paths["ozone"]]).reshape(-1)
         lats = _scaled(h5[paths["lat"]]).reshape(-1)
         lons = _scaled(h5[paths["lon"]]).reshape(-1)
+        quality = h5[paths["quality"]][...].reshape(-1) if "quality" in paths else None
+        xtrack = h5[paths["xtrack"]][...].reshape(-1) if "xtrack" in paths else None
     if not (ozone.shape == lats.shape == lons.shape):
         raise RuntimeError("OMTO3G ozone, latitude and longitude arrays have different sizes.")
 
-    # QualityFlags are product-specific bit fields; observations are kept unless the value itself is
-    # missing or outside a physically plausible total-column range.
+    # Keep only observations NASA marks as good: a good quality code, a row free of the row anomaly,
+    # and a value inside a physically plausible total-column range.
     valid = np.isfinite(ozone) & np.isfinite(lats) & np.isfinite(lons)
     valid &= (ozone > 50) & (ozone < 700)
+    if quality is not None and quality.shape == ozone.shape:
+        valid &= np.isin(quality.astype(np.int64) & 0b1111, GOOD_QUALITY_CODES)
+    if xtrack is not None and xtrack.shape == ozone.shape:
+        valid &= xtrack.astype(np.int64) == 0
     lat_min, lat_max, lon_min, lon_max = _REGION
     valid &= (lats >= lat_min) & (lats <= lat_max) & (lons >= lon_min) & (lons <= lon_max)
     if not np.any(valid):
         raise RuntimeError("No valid ozone observations were found over India in the OMTO3G granule.")
     value = (ozone[valid].astype(np.float32), lats[valid].astype(np.float32), lons[valid].astype(np.float32))
-    _points_cache.update(key=key, value=value)
+    if len(_points_cache) >= KEEP_DAILY_FILES + 1:             # newest + fallback days; drop the oldest entry
+        _points_cache.pop(next(iter(_points_cache)))
+    _points_cache[str(path)] = (version, value)
     return value
 
 
@@ -280,26 +357,47 @@ def get_current_ozone(lat: float, lon: float) -> dict[str, Any]:
     try:
         path, granule = _get_cached_granule()
         value, distance_deg, source_cell = _nearest_ozone(path, lat, lon)
+        observed, granule_id, earlier_pass = granule.get("time_start"), granule.get("granule"), False
+        if distance_deg > MAX_DISTANCE_DEGREES:
+            # The satellite covers India in strips; a point missed today is usually covered a day earlier.
+            for older in _earlier_files(path):
+                try:
+                    v, d, c = _nearest_ozone(older, lat, lon)
+                except Exception as exc:             # an unreadable old file: skip it
+                    log.warning("could not read %s: %s", older.name, exc)
+                    continue
+                if d <= MAX_DISTANCE_DEGREES:
+                    value, distance_deg, source_cell = v, d, c
+                    observed = _file_date(older).strftime("%Y-%m-%dT00:00:00.000Z")
+                    granule_id, earlier_pass = older.name, True
+                    break
         if distance_deg > MAX_DISTANCE_DEGREES:
             result.update({
                 "status": "unavailable",
-                "message": f"The latest satellite pass has no valid ozone observation within {MAX_DISTANCE_DEGREES}° "
+                "message": f"The recent satellite passes have no valid ozone observation within {MAX_DISTANCE_DEGREES}° "
                            f"of this point (nearest is {distance_deg:.1f}° away). No value is shown.",
                 "observation_time": granule.get("time_start"),
                 "retrieved_at": datetime.now(timezone.utc).isoformat(),
             })
             return result
-        age_days = _age_days(granule.get("time_start"))
+        age_days = _age_days(observed)
         recent = age_days is not None and age_days <= MAX_FRESH_DAYS
+        if not recent:
+            message = (f"The newest available NASA OMTO3G file is {age_days if age_days is not None else 'an unknown number of'} "
+                       "days old, so this is not a current reading.")
+        elif earlier_pass:
+            message = ("The newest satellite pass did not cover this point, so this is the nearest valid OMTO3G "
+                       "observation from the pass shown, a day or two earlier.")
+        else:
+            message = "Nearest valid OMTO3G observation from the newest available daily file."
         result.update({
             "value": round(value, 2),
             "status": "live" if recent else "stale",
-            "message": ("Nearest valid OMTO3G observation from the newest available daily file." if recent else
-                        f"The newest available NASA OMTO3G file is {age_days if age_days is not None else 'an unknown number of'} "
-                        "days old, so this is not a current reading."),
-            "observation_time": granule.get("time_start"),
+            "message": message,
+            "observation_time": observed,
             "observation_age_days": age_days,
-            "granule": granule.get("granule"),
+            "from_earlier_pass": earlier_pass,
+            "granule": granule_id,
             "source_cell": source_cell,
             "distance_degrees": round(distance_deg, 4),
             "retrieved_at": datetime.now(timezone.utc).isoformat(),

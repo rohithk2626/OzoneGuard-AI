@@ -7,15 +7,17 @@ hour and writes ``docs/ground-truth-validation.md`` plus a JSON file with every 
 
 Station data can come from either source:
 
-1. CSV files you download yourself (works today, no key)::
+1. Files you download yourself, Excel (.xlsx) or CSV (works today, no key)::
 
-       python -m ml.validate_ground_truth csv data/external/stations/*.csv
+       python -m ml.validate_ground_truth csv data/external/stations
 
-   Each file is one station. It needs a time column and an ozone column (µg/m³). Station
-   coordinates come from ``latitude`` / ``longitude`` columns, or from ``--lat`` / ``--lon``
-   when there is one file. Times are taken as Indian Standard Time unless ``--tz UTC``.
-   CPCB "CCR" exports (title rows above the header, ``From Date`` / ``To Date`` columns)
-   are read as they are.
+   Give a folder (every .xlsx/.xls/.csv in it is read) or individual files. Each file is one
+   station. It needs a time column and an ozone column (µg/m³). CPCB "CCR" Excel exports
+   (title rows above the header, ``From Date`` / ``To Date`` columns) are read exactly as
+   downloaded, so they never need converting or editing. Station coordinates come from, in
+   order: ``latitude`` / ``longitude`` columns, the end of the file name
+   (``hyderabad_zoo_park_17.3500_78.4510.xlsx``), or ``--lat`` / ``--lon`` when there is one
+   file. Times are taken as Indian Standard Time unless ``--tz UTC``.
 
 2. OpenAQ (needs a free key in ``OPENAQ_API_KEY``)::
 
@@ -35,8 +37,9 @@ import json
 import logging
 import math
 import os
+import re
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -68,33 +71,120 @@ def _find(columns: list[str], names: list[str]) -> str | None:
     return next((low[n] for n in names if n in low), None)
 
 
-def read_station_csv(path: Path, tz: str = "Asia/Kolkata", lat: float | None = None, lon: float | None = None,
-                     unit: str = "ugm3") -> pd.DataFrame:
-    """One station file -> columns [station, latitude, longitude, time_utc, station_ozone]."""
-    text = Path(path).read_text(encoding="utf-8-sig", errors="replace")
-    lines = text.splitlines()
+EXCEL_SUFFIXES = (".xlsx", ".xlsm", ".xls")
+STATION_SUFFIXES = EXCEL_SUFFIXES + (".csv",)
+# Coordinates at the end of a file name: "hyderabad_zoo_park_17.3500_78.4510.xlsx" -> (17.35, 78.451)
+_NAME_COORDS = re.compile(r"[_ ](-?\d{1,2}\.\d+)[_ ,]+(-?\d{1,3}\.\d+)$")
+
+
+def _is_header(cells: list) -> bool:
+    cells = [str(c) for c in cells if c is not None and not (isinstance(c, float) and math.isnan(c))]
+    return bool(_find(cells, TIME_NAMES) and _find(cells, OZONE_NAMES))
+
+
+def _read_table(path: Path) -> pd.DataFrame:
+    """The station table under its header row, skipping any title rows above it."""
+    if path.suffix.lower() in EXCEL_SUFFIXES:
+        raw = pd.read_excel(path, header=None, dtype=object)        # first sheet; needs openpyxl for .xlsx
+        start = next((i for i in range(len(raw)) if _is_header(list(raw.iloc[i]))), None)
+        if start is None:
+            raise ValueError(f"{path}: no header row with a time column and an ozone column was found.")
+        cols = [str(c).strip() if pd.notna(c) else f"column_{j}" for j, c in enumerate(raw.iloc[start])]
+        df = raw.iloc[start + 1:].copy()
+        df.columns = cols
+        return df.dropna(how="all").reset_index(drop=True)
+    lines = path.read_text(encoding="utf-8-sig", errors="replace").splitlines()
     # Skip title rows (CPCB exports start with the station name, parameter list, ...).
-    start = next((i for i, ln in enumerate(lines)
-                  if _find([c for c in ln.split(",")], TIME_NAMES) and _find([c for c in ln.split(",")], OZONE_NAMES)), None)
+    start = next((i for i, ln in enumerate(lines) if _is_header(ln.split(","))), None)
     if start is None:
         raise ValueError(f"{path}: no header row with a time column and an ozone column was found.")
-    df = pd.read_csv(io.StringIO("\n".join(lines[start:])))
+    return pd.read_csv(io.StringIO("\n".join(lines[start:])))
+
+
+def _parse_times(values: pd.Series) -> pd.Series:
+    """Turn the time column into datetimes without swapping day and month.
+
+    * Excel date cells arrive as datetimes: no ambiguity.
+    * Year-first text ('2025-01-12 00:00:00', the CPCB data-repository CSVs) is read year-month-day.
+      Reading it "day first" would turn 12 January into 1 December.
+    * Other text ('12-01-2025 00:00', older CPCB exports) is read day first, as Indian dates are written.
+    """
+    is_dt = values.map(lambda v: isinstance(v, (datetime, date, pd.Timestamp)))
+    text = values.where(~is_dt).astype("string").str.replace(r"\s+-\s+", " ", regex=True).str.strip()
+    year_first = text.str.match(r"^\d{4}[-/.]\d{1,2}[-/.]\d{1,2}", na=False)
+    iso = pd.to_datetime(text.where(year_first).str.replace(r"^(\d{4})[/.](\d{1,2})[/.](\d{1,2})", r"\1-\2-\3", regex=True),
+                         errors="coerce", format="ISO8601")
+    other = pd.to_datetime(text.where(~year_first), errors="coerce", dayfirst=True, format="mixed")
+    t = iso.where(year_first, other)
+    if is_dt.any():
+        t = t.where(~is_dt, pd.to_datetime(values.where(is_dt), errors="coerce"))
+    return t
+
+
+# CPCB data-repository file names: Raw_Data_2025_site_298_zoo_park_hyderabad_tspcb_1Hr
+_CPCB_PREFIX = re.compile(r"(?i)^raw[_ ]data[_ ]\d{4}[_ ]site[_ ]\d+[_ ]")
+_CPCB_SUFFIX = re.compile(r"(?i)[_ ](?:15m(?:in)?|1h(?:r)?|8h(?:r)?|24h(?:r)?)$")
+
+
+def _name_and_coords(path: Path) -> tuple[str, float | None, float | None]:
+    """Station name and coordinates taken from a file name like 'delhi_sirifort_28.5504_77.2159.xlsx'.
+    A 'part1', 'part2' … word (one station downloaded in several date ranges) and CPCB's own
+    'Raw_Data_<year>_site_<id>_' prefix and '_1Hr' suffix are left out of the name, so several files
+    of the same station (e.g. 2025 and 2026) are combined into one station."""
+    stem = path.stem
+    m = _NAME_COORDS.search(stem)
+    if not m:
+        return stem, None, None
+    name = re.sub(r"(?i)(?:^|[_ ])part[_ ]?\d+(?=$|[_ ])", "", stem[:m.start()])
+    name = _CPCB_SUFFIX.sub("", _CPCB_PREFIX.sub("", name))
+    name = name.replace("_", " ").strip() or stem
+    return name, float(m.group(1)), float(m.group(2))
+
+
+def read_station_file(path: Path, tz: str = "Asia/Kolkata", lat: float | None = None, lon: float | None = None,
+                      unit: str = "ugm3") -> pd.DataFrame:
+    """One station file (.xlsx/.xls/.csv) -> columns [station, latitude, longitude, time_utc, station_ozone]."""
+    path = Path(path)
+    df = _read_table(path)
     tcol, ocol = _find(list(df.columns), TIME_NAMES), _find(list(df.columns), OZONE_NAMES)
-    t = pd.to_datetime(df[tcol], errors="coerce", dayfirst=True, utc=False)
+    t = _parse_times(df[tcol])
     if getattr(t.dt, "tz", None) is None:
         t = t.dt.tz_localize(tz, ambiguous="NaT", nonexistent="NaT")
     out = pd.DataFrame({"time_utc": t.dt.tz_convert("UTC").dt.floor("h"),
                         "station_ozone": pd.to_numeric(df[ocol], errors="coerce")})
     if unit == "ppb":
         out["station_ozone"] *= PPB_TO_UGM3
+    file_name, file_lat, file_lon = _name_and_coords(path)
     lat_c, lon_c, name_c = _find(list(df.columns), LAT_NAMES), _find(list(df.columns), LON_NAMES), _find(list(df.columns), NAME_NAMES)
-    out["latitude"] = pd.to_numeric(df[lat_c], errors="coerce").iloc[0] if lat_c else lat
-    out["longitude"] = pd.to_numeric(df[lon_c], errors="coerce").iloc[0] if lon_c else lon
+    out["latitude"] = pd.to_numeric(df[lat_c], errors="coerce").iloc[0] if lat_c else (file_lat if file_lat is not None else lat)
+    out["longitude"] = pd.to_numeric(df[lon_c], errors="coerce").iloc[0] if lon_c else (file_lon if file_lon is not None else lon)
     if out["latitude"].isna().all() or out["longitude"].isna().all():
-        raise ValueError(f"{path}: station coordinates are missing. Add latitude/longitude columns or pass --lat and --lon.")
-    out["station"] = str(df[name_c].iloc[0]) if name_c else Path(path).stem
+        raise ValueError(f"{path}: station coordinates are missing. End the file name with them "
+                         "(e.g. hyderabad_zoo_park_17.3500_78.4510.xlsx), add latitude/longitude columns, "
+                         "or pass --lat and --lon.")
+    out["station"] = str(df[name_c].iloc[0]) if name_c else file_name
     out = out.dropna(subset=["time_utc"])
     return out.groupby(["station", "latitude", "longitude", "time_utc"], as_index=False)["station_ozone"].mean()
+
+
+read_station_csv = read_station_file          # earlier name, kept for existing callers
+
+
+def expand_station_paths(items: list[Path]) -> list[Path]:
+    """Folders -> every station file inside; '*' patterns (PowerShell passes them literally) -> matches.
+    Excel's temporary '~$' lock files and non-table files (README.md) are skipped."""
+    out: list[Path] = []
+    for item in map(Path, items):
+        if item.is_dir():
+            found = [p for p in sorted(item.iterdir()) if p.suffix.lower() in STATION_SUFFIXES]
+        elif any(ch in str(item) for ch in "*?["):
+            found = sorted(p for p in item.parent.glob(item.name) if p.suffix.lower() in STATION_SUFFIXES)
+        else:
+            found = [item]
+        out += [p for p in found if not p.name.startswith("~$")]
+    if not out:
+        raise ValueError("No station files (.xlsx, .xls or .csv) were found in: " + ", ".join(map(str, items)))
+    return out
 
 
 def clean_station(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
@@ -296,8 +386,8 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
-    c = sub.add_parser("csv", help="compare station CSV files you downloaded")
-    c.add_argument("files", nargs="+", type=Path)
+    c = sub.add_parser("csv", aliases=["files"], help="compare station files you downloaded (.xlsx, .xls or .csv)")
+    c.add_argument("files", nargs="+", type=Path, help="station files, or a folder that holds them")
     c.add_argument("--tz", default="Asia/Kolkata", help="timezone of the times in the files (default: Indian Standard Time)")
     c.add_argument("--lat", type=float)
     c.add_argument("--lon", type=float)
@@ -309,11 +399,23 @@ def main() -> None:
     o.add_argument("--only", nargs="*", help="location ids, e.g. delhi hyderabad")
     args = ap.parse_args()
 
-    if args.cmd == "csv":
-        if len(args.files) > 1 and (args.lat is not None or args.lon is not None):
-            ap.error("--lat/--lon can only be used with a single file; put latitude/longitude columns in each file instead.")
-        stations = pd.concat([read_station_csv(f, args.tz, args.lat, args.lon, args.unit) for f in args.files], ignore_index=True)
-        source = f"{len(args.files)} CSV file(s)"
+    if args.cmd in ("csv", "files"):
+        try:
+            files = expand_station_paths(args.files)
+        except ValueError as exc:
+            ap.error(str(exc))
+        if len(files) > 1 and (args.lat is not None or args.lon is not None):
+            ap.error("--lat/--lon can only be used with a single file; end each file name with its coordinates instead "
+                     "(e.g. hyderabad_zoo_park_17.3500_78.4510.xlsx).")
+        frames = []
+        for f in files:
+            try:
+                frames.append(read_station_file(f, args.tz, args.lat, args.lon, args.unit))
+                log.info("read %s", f.name)
+            except Exception as exc:
+                ap.error(f"could not read {f.name}: {exc}")
+        stations = pd.concat(frames, ignore_index=True)
+        source = f"{len(files)} station file(s): " + ", ".join(f.name for f in files)
     else:
         try:
             from dotenv import load_dotenv
